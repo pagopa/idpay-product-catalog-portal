@@ -102,6 +102,23 @@ describe('DownloadCsvLink', () => {
     });
   });
 
+  it('logs a generic error when fetch rejects with a non-error value', async () => {
+    global.fetch = vi.fn().mockRejectedValue('network down') as unknown as typeof fetch;
+
+    const consoleErrorMock = vi.fn();
+    console.error = consoleErrorMock;
+
+    render(<DownloadCsvLink />);
+
+    fireEvent.click(
+      screen.getByText('Scarica la lista in formato csv')
+    );
+
+    await waitFor(() => {
+      expect(consoleErrorMock).toHaveBeenCalledWith('Download Error');
+    });
+  });
+
   it('does not trigger download if already downloading', async () => {
     const blob = new Blob(['test'], { type: 'text/csv' });
 

@@ -34,8 +34,8 @@ describe('CustomPaginator', () => {
       />
     );
 
-    setRowsPerPage(25);
-    setPage(1);
+    fireEvent.mouseDown(screen.getByRole('combobox'));
+    fireEvent.click(screen.getByRole('option', { name: '25' }));
 
     expect(setRowsPerPage).toHaveBeenCalledWith(25);
     expect(setPage).toHaveBeenCalledWith(1);

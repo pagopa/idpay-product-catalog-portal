@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { Footer } from './Footer';
 
 vi.mock('../IOFeaturesBanner/IOFeaturesBanner', () => ({
@@ -18,14 +18,16 @@ vi.mock('@pagopa/mui-italia', () => ({
   FooterPostLogin: (props: {
     companyLink: { onClick: () => void };
     links: { label: string; onClick: () => void }[];
+    onLanguageChanged: () => void;
   }) => (
     <div data-testid="footer-post-login">
-      <button onClick={props.companyLink.onClick}>Company</button>
+      <button type="button" onClick={props.companyLink.onClick}>Company</button>
       {props.links.map((link) => (
-        <button key={link.label} onClick={link.onClick}>
+        <button type="button" key={link.label} onClick={link.onClick}>
           {link.label}
         </button>
       ))}
+      <button type="button" onClick={props.onLanguageChanged}>Language</button>
     </div>
   ),
   FooterLegal: (props: { content: React.ReactNode }) => (
@@ -49,16 +51,22 @@ describe('Footer component', () => {
   });
 
   it('opens external links when clicked', () => {
+    const focus = vi.fn();
     const openSpy = vi.spyOn(window, 'open').mockReturnValue({
-      focus: vi.fn()
+      focus
     } as unknown as Window);
 
     render(<Footer />);
 
-    const companyButton = screen.getByRole('button', { name: 'Company' });
-    companyButton.click();
+    fireEvent.click(screen.getByRole('button', { name: 'Company' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Informativa Privacy' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Diritto alla protezione dei dati personali' }));
+    fireEvent.click(screen.getByRole('button', { name: "Termini e condizioni d'uso" }));
+    fireEvent.click(screen.getByRole('button', { name: 'Accessibilità' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Language' }));
 
-    expect(openSpy).toHaveBeenCalled();
+    expect(openSpy).toHaveBeenCalledTimes(5);
+    expect(focus).toHaveBeenCalledTimes(5);
   });
 
   it('renders legal content text', () => {
