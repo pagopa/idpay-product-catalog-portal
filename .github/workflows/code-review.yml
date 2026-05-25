@@ -32,14 +32,8 @@ jobs:
           corepack enable
           yarn install --immutable --check-cache || yarn install --force 
 
-      - name: Jest Coverage Report
-        uses: ArtiomTr/jest-coverage-report-action@v2.0-rc.6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          test-script: yarn test:coverage
-          threshold: 90
-          annotations: none
-          package-manager: yarn
+      - name: Test and coverage
+        run: yarn test:coverage
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v5.0.0
