@@ -32,9 +32,6 @@ jobs:
           corepack enable
           yarn install --immutable --check-cache || yarn install --force 
 
-      - name: Genera client API
-        run: yarn generate
-
       - name: Jest Coverage Report
         uses: ArtiomTr/jest-coverage-report-action@v2.0-rc.6
         with:
