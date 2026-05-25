@@ -83,4 +83,59 @@ describe('ProductsFilters', () => {
     expect(defaultProps.setSelectedBrand).toHaveBeenCalledWith(null);
     expect(defaultProps.setSelectedClass).toHaveBeenCalledWith(null);
   });
+
+  it('shows filter count when filters are selected (mobile)', () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(true);
+
+    render(
+      <ProductsFilters
+        {...defaultProps}
+        selectedCategory="Cat1"
+        selectedBrand="Brand1"
+      />
+    );
+
+    expect(screen.getByText(/Filtra \(2\)/)).toBeInTheDocument();
+  });
+
+  it('handles focus and blur on search input (desktop)', () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(false);
+
+    render(<ProductsFilters {...defaultProps} />);
+
+    const input = screen.getByLabelText('Cerca modello o codice EAN');
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+
+    expect(input).toBeInTheDocument();
+  });
+
+  it('closes mobile drawer via close icon and Filtra button', () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(true);
+
+    render(<ProductsFilters {...defaultProps} />);
+
+    const filterButton = screen.getAllByRole('button', { name: /^Filtra/ })[0];
+    fireEvent.click(filterButton);
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+
+    const applyButtons = screen.getAllByRole('button', { name: /^Filtra$/ });
+    fireEvent.click(applyButtons[applyButtons.length - 1]);
+  });
+
+  it('calls setSelectedCategory on desktop change', () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(false);
+
+    render(<ProductsFilters {...defaultProps} />);
+
+    const categorySelect = screen.getByLabelText('Categoria');
+    fireEvent.mouseDown(categorySelect);
+
+    const option = screen.getByRole('option', { name: 'Cat1' });
+    fireEvent.click(option);
+
+    expect(defaultProps.setSelectedCategory).toHaveBeenCalledWith('Cat1');
+  });
 });
