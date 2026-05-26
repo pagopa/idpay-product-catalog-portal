@@ -275,4 +275,28 @@ describe('ProductsFilters', () => {
 
     expect(screen.getByRole('button', { name: /^Filtra$/ })).toBeInTheDocument();
   });
+
+  it('applies zero filter count when all filters are cleared (mobile)', () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(true);
+
+    render(
+      <ProductsFilters
+        {...defaultProps}
+        selectedCategory={null}
+        selectedBrand={null}
+        selectedClass={null}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /^Filtra$/ })).toBeInTheDocument();
+  });
+
+  it('returns empty string from getFilterCount when no filters selected (indirect via label)', () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(true);
+
+    render(<ProductsFilters {...defaultProps} />);
+
+    const button = screen.getByRole('button', { name: /^Filtra$/ });
+    expect(button.textContent).toBe('Filtra');
+  });
 });
