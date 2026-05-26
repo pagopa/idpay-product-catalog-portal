@@ -118,8 +118,12 @@ const ProductsList = (json: ProductsListProps) => {
 
     const unique = [...new Set(normalized)];
 
+    const ENERGY_CLASS_REGEX = /^([A-G])(\+*)$/;
+
     const rank = (cls: string) => {
-      const match = cls.match(/^([A-G])(\+*)$/);
+      if (cls.length > 5) return 999;
+
+      const match = ENERGY_CLASS_REGEX.exec(cls);
       if (!match) return 999;
 
       const letter = match[1];
