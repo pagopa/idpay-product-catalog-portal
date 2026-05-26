@@ -180,4 +180,26 @@ describe('ProductDetailsDrawer', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'swipe-open-prop' }));
   });
+
+  it('handles iOS specific swipeable props', () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(true);
+
+    const originalNavigator = global.navigator;
+    // @ts-expect-error override navigator for test
+    global.navigator = { userAgent: 'iPhone' };
+
+    render(
+      <ProductDetailsDrawer
+        open
+        onClose={vi.fn()}
+        product={mockProduct}
+      />
+    );
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveAttribute('data-disable-backdrop-transition', 'false');
+    expect(dialog).toHaveAttribute('data-disable-discovery', 'true');
+
+    global.navigator = originalNavigator;
+  });
 });

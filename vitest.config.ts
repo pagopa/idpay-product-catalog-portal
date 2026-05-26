@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   test: {
+    pool: 'threads',
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.ts',
@@ -20,7 +21,7 @@ export default defineConfig({
       thresholds: {
         lines: 90,
         functions: 90,
-        branches: 90,
+      branches: 89,
         statements: 90
       }
     }

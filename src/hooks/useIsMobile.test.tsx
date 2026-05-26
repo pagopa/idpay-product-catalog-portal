@@ -7,12 +7,11 @@ vi.mock('@mui/material', async () => {
   const actual = await vi.importActual<typeof import('@mui/material')>('@mui/material');
   return {
     ...actual,
-    useMediaQuery: vi.fn(),
-    useTheme: vi.fn()
+    useMediaQuery: vi.fn()
   };
 });
 
-import { useMediaQuery, useTheme } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 
 describe('useIsMobile', () => {
   const theme = createTheme();
@@ -26,10 +25,7 @@ describe('useIsMobile', () => {
   });
 
   it('returns true when media query matches mobile breakpoint', () => {
-    const themeSpy = useTheme as unknown as ReturnType<typeof vi.fn>;
     const mediaSpy = useMediaQuery as unknown as ReturnType<typeof vi.fn>;
-
-    themeSpy.mockReturnValue(theme);
     mediaSpy.mockReturnValue(true);
 
     const { result } = renderHook(() => useIsMobile(), { wrapper });
@@ -38,10 +34,7 @@ describe('useIsMobile', () => {
   });
 
   it('returns false when media query does not match mobile breakpoint', () => {
-    const themeSpy = useTheme as unknown as ReturnType<typeof vi.fn>;
     const mediaSpy = useMediaQuery as unknown as ReturnType<typeof vi.fn>;
-
-    themeSpy.mockReturnValue(theme);
     mediaSpy.mockReturnValue(false);
 
     const { result } = renderHook(() => useIsMobile(), { wrapper });
@@ -51,33 +44,11 @@ describe('useIsMobile', () => {
 
   it('calls useMediaQuery with the mobile breakpoint query', () => {
     const mediaSpy = useMediaQuery as unknown as ReturnType<typeof vi.fn>;
-    const themeSpy = useTheme as unknown as ReturnType<typeof vi.fn>;
-
-    themeSpy.mockReturnValue(theme);
     mediaSpy.mockReturnValue(false);
 
     renderHook(() => useIsMobile(), { wrapper });
 
     const expectedQuery = theme.breakpoints.down('sm');
     expect(mediaSpy).toHaveBeenCalledWith(expectedQuery);
-  });
-
-  it('uses theme from useTheme hook', () => {
-    const customTheme = createTheme({
-      breakpoints: {
-        values: { xs: 0, sm: 500, md: 900, lg: 1200, xl: 1536 }
-      }
-    });
-
-    const themeSpy = useTheme as unknown as ReturnType<typeof vi.fn>;
-    const mediaSpy = useMediaQuery as unknown as ReturnType<typeof vi.fn>;
-
-    themeSpy.mockReturnValue(customTheme);
-    mediaSpy.mockReturnValue(true);
-
-    const { result } = renderHook(() => useIsMobile(), { wrapper });
-
-    expect(result.current).toBe(true);
-    expect(mediaSpy).toHaveBeenCalledWith(customTheme.breakpoints.down('sm'));
   });
 });

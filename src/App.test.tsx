@@ -14,9 +14,20 @@ vi.mock('./pages/SearchProductPage/SearchProductPage', () => ({
 }));
 
 describe('App', () => {
-  it('renders Layout and SearchProductPage', () => {
+  it('renders Layout and SearchProductPage on root path', () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId('layout')).toBeInTheDocument();
+    expect(screen.getByTestId('search-page')).toBeInTheDocument();
+  });
+
+  it('renders SearchProductPage on unknown route via wildcard', () => {
+    render(
+      <MemoryRouter initialEntries={['/unknown-route']}>
         <App />
       </MemoryRouter>
     );
