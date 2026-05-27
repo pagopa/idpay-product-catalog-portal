@@ -20,21 +20,12 @@ import { useIsMobile } from '../../hooks/useIsMobile'
 import MobileProductCard from './MobileProductCard'
 import { ProductDetailsDrawer } from '../ProductDetailsDrawer/ProductDetailsDrawer'
 import DownloadCsvLink from '../DownloadCsvLink/DownloadCsvLink'
+import { getInitiativeConfig } from '../../config/initiativeConfig'
 
 export const baseUrlEprel = "https://eprel.ec.europa.eu/screen/product";
 
 export interface Product {
-  gtin: string
-  model: string
-  category: string
-  brand: string
-  eprelCode?: string
-  countryOfProduction: string
-  energyClass?: string
-  productName?: string
-  productGroup?: string
-  capacity?: string
-  productCode?: string
+  [key: string]: string | undefined
 }
 
 interface Column {
@@ -44,20 +35,19 @@ interface Column {
   width: string
 }
 
-const columns: Column[] = [
-  { id: 'category', label: 'Categoria', align: 'left', width: '23%' },
-  { id: 'brand', label: 'Marca', align: 'left', width: '15%' },
-  { id: 'model', label: 'Modello', align: 'left', width: '22%' },
-  { id: 'gtin', label: 'Codice GTIN / EAN', align: 'left', width: '18%' },
-  { id: 'eprelCode', label: 'Codice EPREL', align: 'left', width: '15%' },
-  { id: 'actions', label: '', align: 'right', width: '7%' },
-]
+const ProductsList = ({ data: rawData }: { data: Product[] }) => {
+  const initiativeConfig = getInitiativeConfig()
 
-interface ProductsListProps {
-  data: Product[]
-}
+  const columns: Column[] = [
+    ...initiativeConfig.tableColumns.map((col) => ({
+      id: col.key as keyof Product,
+      label: col.label,
+      align: 'left' as const,
+      width: '20%',
+    })),
+    { id: 'actions', label: '', align: 'right', width: '7%' },
+  ]
 
-const ProductsList = (json: ProductsListProps) => {
   const [orderBy, setOrderBy] = useState<keyof Product>('category')
   const [order, setOrder] = useState<'asc' | 'desc'>('asc')
   const [page, setPage] = useState<number>(1)
@@ -65,99 +55,47 @@ const ProductsList = (json: ProductsListProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
   const [selectedClass, setSelectedClass] = useState<string | null>(null)
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(10)
 
-  const categoryLabel: Record<string, string> = {
-    WASHINGMACHINES: 'Lavatrice',
-    WASHERDRIERS: 'Lavasciuga',
-    OVENS: 'Forno',
-    RANGEHOODS: 'Cappa da cucina',
-    DISHWASHERS: 'Lavastoviglie',
-    TUMBLEDRYERS: 'Asciugatrice',
-    REFRIGERATINGAPPL: 'Apparecchio di refrigerazione',
-    COOKINGHOBS: 'Piano cottura'
-  };
-
-  const sanitizeProduct = <T extends Product>(product: T): T => {
-    const sanitized = { ...product }
-
+  const sanitizeProduct = (product: Product): Product => {
+    const sanitized: Product = { ...product }
     Object.keys(sanitized).forEach((key) => {
-      const value = sanitized[key as keyof T]
+      const value = sanitized[key]
       if (typeof value === 'string') {
-        (sanitized as Record<string, unknown>)[key] = value.trim().replace(/\s+/g, ' ')
+        sanitized[key] = value.trim().replace(/\s+/g, ' ')
       }
     })
-
     return sanitized
   }
 
-  const rawData = json.data;
-  const data = useMemo(
-    () =>
-      rawData.map((d) => sanitizeProduct({
-        ...d,
-        category: categoryLabel[d.category] || d.category
-      })),
-    [rawData]
-  );
+  const data = useMemo(() => rawData.map((d) => sanitizeProduct(d)), [rawData])
 
   const categories = useMemo(
-    () => [...new Set(data.map((d) => d.category))].sort((a, b) => a.localeCompare(b)),
+    () => [...new Set(data.map((d) => d.category).filter(Boolean))] as string[],
     [data]
   )
 
   const brands = useMemo(
-    () => [...new Set(data.map((d) => d.brand))].sort((a, b) => a.localeCompare(b)),
+    () => [...new Set(data.map((d) => d.brand).filter(Boolean))] as string[],
     [data]
   )
 
-  const classes = useMemo(() => {
-    const normalized = data
-      .map((d) => d.energyClass?.trim().toUpperCase())
-      .filter((value) => value && value !== "");
-
-    const unique = [...new Set(normalized)];
-
-    const rank = (cls: string) => {
-      if (cls.length === 0 || cls.length > 5) return 999;
-
-      const letter = cls[0];
-      if (letter < 'A' || letter > 'G') return 999;
-
-      let pluses = 0;
-      for (let i = 1; i < cls.length; i++) {
-        if (cls[i] !== '+') return 999;
-        pluses++;
-      }
-
-      return (letter.charCodeAt(0) - 65) * 10 - pluses;
-    };
-
-    const sorted = unique.sort((a, b) => rank(a!) - rank(b!));
-
-    return sorted;
-  }, [data]);
-
-  const models = useMemo(
-    () => [...new Set(data.map((d) => d.model || d.gtin))].sort((a, b) => a.localeCompare(b)),
-    [data]
-  )
-
-  const gtins = useMemo(
-    () => [...new Set(data.map((d) => d.gtin))].sort((a, b) => a.localeCompare(b)),
+  const classes = useMemo(
+    () => [...new Set(data.map((d) => d.energyClass).filter(Boolean))] as string[],
     [data]
   )
 
   const modelsOrGtins = useMemo(
-    () => [...new Set([...models, ...gtins])].sort((a, b) => a.localeCompare(b)),
-    [models, gtins]
+    () =>
+      [...new Set(data.map((d) => d.model ?? d.gtin).filter(Boolean))] as string[],
+    [data]
   )
 
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile()
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [page]);
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [page])
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
@@ -178,39 +116,41 @@ const ProductsList = (json: ProductsListProps) => {
     setOrderBy(property)
   }
 
-  const normalizeString = (str: string): string => {
-    return str.toLowerCase().replace(/\s+/g, '');
-  };
+  const normalizeString = (str?: string): string =>
+    (str ?? '').toLowerCase().replace(/\s+/g, '')
 
   const filteredAndSortedData = useMemo(() => {
-    setPage(1);
+    setPage(1)
 
-    const filtered = data
+    return data
       .filter((item) => {
         const matchesSearch =
           !search ||
-          normalizeString(item.model || "").includes(normalizeString(search)) ||
-          normalizeString(item.gtin || "").includes(normalizeString(search));
+          normalizeString(item.model).includes(normalizeString(search)) ||
+          normalizeString(item.gtin).includes(normalizeString(search))
 
-        const matchesCategory = !selectedCategory || item.category === selectedCategory;
-        const matchesBrand = !selectedBrand || item.brand === selectedBrand;
-        const matchesClass = !selectedClass || item?.energyClass === selectedClass;
+        const matchesCategory =
+          !selectedCategory || item.category === selectedCategory
+        const matchesBrand = !selectedBrand || item.brand === selectedBrand
+        const matchesClass =
+          !selectedClass || item.energyClass === selectedClass
 
-        return matchesSearch && matchesCategory && matchesBrand && matchesClass;
+        return matchesSearch && matchesCategory && matchesBrand && matchesClass
       })
       .sort((a, b) => {
-        const aValue = (a[orderBy] ?? "") as string;
-        const bValue = (b[orderBy] ?? "") as string;
-        return order === "asc"
-          ? String(aValue).localeCompare(String(bValue))
-          : String(bValue).localeCompare(String(aValue));
-      });
+        const aValue = (a[orderBy] ?? '') as string
+        const bValue = (b[orderBy] ?? '') as string
+        return order === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue)
+      })
+  }, [data, order, orderBy, search, selectedCategory, selectedBrand, selectedClass])
 
-    return filtered;
-  }, [data, order, orderBy, search, selectedCategory, selectedBrand, selectedClass]);
-
-  const startIndex = (page - 1) * rowsPerPage;
-  const paginatedData = filteredAndSortedData.slice(startIndex, startIndex + rowsPerPage);
+  const startIndex = (page - 1) * rowsPerPage
+  const paginatedData = filteredAndSortedData.slice(
+    startIndex,
+    startIndex + rowsPerPage
+  )
 
   return (
     <>
@@ -229,11 +169,16 @@ const ProductsList = (json: ProductsListProps) => {
           setSelectedClass={setSelectedClass}
           modelsOrGtins={modelsOrGtins}
         />
+
         <Box sx={{ px: { xs: 2, md: 8 } }}>
           {isMobile ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {paginatedData.map((row) => (
-                <MobileProductCard key={row.gtin} product={row} onClick={() => handleOpenDrawer(row)} />
+              {paginatedData.map((row, index) => (
+                <MobileProductCard
+                  key={`${row.gtin ?? row.model ?? index}`}
+                  product={row}
+                  onClick={() => handleOpenDrawer(row)}
+                />
               ))}
             </Box>
           ) : (
@@ -269,14 +214,16 @@ const ProductsList = (json: ProductsListProps) => {
                           px: 3,
                           py: 1.5,
                           backgroundColor: 'transparent',
-                          verticalAlign: 'bottom'
+                          verticalAlign: 'bottom',
                         }}
                       >
                         {col.id !== 'actions' ? (
                           <TableSortLabel
                             active={orderBy === col.id}
                             direction={orderBy === col.id ? order : 'asc'}
-                            onClick={() => handleSort(col.id as keyof Product)}
+                            onClick={() =>
+                              handleSort(col.id as keyof Product)
+                            }
                             sx={{
                               '& .MuiTableSortLabel-icon': {
                                 color: '#6b7280 !important',
@@ -297,9 +244,9 @@ const ProductsList = (json: ProductsListProps) => {
                 </TableHead>
 
                 <TableBody>
-                  {paginatedData.map((row) => (
+                  {paginatedData.map((row, index) => (
                     <TableRow
-                      key={row.gtin}
+                      key={`${row.gtin ?? row.model ?? index}`}
                       hover
                       sx={{
                         backgroundColor: theme.palette.background.paper,
@@ -307,104 +254,43 @@ const ProductsList = (json: ProductsListProps) => {
                         borderBottom: '2px solid #E3E7EB',
                       }}
                     >
-                      <TableCell align="left" sx={{ px: 3, py: 1.5 }}>
-                        <Tooltip title={row.category} arrow placement="bottom-start">
-                          <Typography
-                            variant="body2"
-                            noWrap
-                            sx={{
-                              color: '#1f2937',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              display: 'block',
-                            }}
-                          >
-                            {row.category}
-                          </Typography>
-                        </Tooltip>
-                      </TableCell>
-
-                      <TableCell align="left" sx={{ px: 3, py: 1.5 }}>
-                        <Tooltip title={row.brand} arrow placement="bottom-start">
-                          <Typography
-                            variant="body2"
-                            noWrap
-                            sx={{
-                              color: '#1f2937',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              display: 'block',
-                            }}
-                          >
-                            {row.brand}
-                          </Typography>
-                        </Tooltip>
-                      </TableCell>
-
-                      <TableCell align="left" sx={{ px: 3, py: 1.5, maxWidth: 250 }}>
-                        <Tooltip title={row.model} arrow placement="bottom-start">
-                          <Typography
-                            variant="body2"
-                            noWrap
-                            sx={{
-                              color: '#1f2937',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              display: 'block',
-                            }}
-                          >
-                            {row.model}
-                          </Typography>
-                        </Tooltip>
-                      </TableCell>
-
-                      <TableCell align="left" sx={{ px: 3, py: 1.5 }}>
-                        <Tooltip title={row.gtin} arrow placement="bottom-start">
-                          <Typography
-                            variant="body2"
-                            noWrap
-                            sx={{
-                              color: '#1f2937',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              display: 'block',
-                            }}
-                          >
-                            {row.gtin}
-                          </Typography>
-                        </Tooltip>
-                      </TableCell>
-
-                      <TableCell align="left" sx={{ px: 3, py: 1.5 }}>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: (row.eprelCode && row.productGroup) ? '#0B3EE3' : '',
-                            fontWeight: theme.typography.fontWeightBold,
-                            cursor: (row.eprelCode && row.productGroup) ? 'pointer' : 'default',
-                            textDecoration: (row.eprelCode && row.productGroup) ? 'underline' : 'none',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            display: 'block',
-                            maxWidth: '100%',
-                          }}
-                          onClick={() => {
-                            if (row.eprelCode && row.productGroup) {
-                              window.open(`${baseUrlEprel}/${row.productGroup}/${row.eprelCode}`, '_blank');
-                            }
-                          }}
+                      {initiativeConfig.tableColumns.map((col) => (
+                        <TableCell
+                          key={col.key}
+                          align="left"
+                          sx={{ px: 3, py: 1.5 }}
                         >
-                          {row.eprelCode || '-'}
-                        </Typography>
-                      </TableCell>
+                          <Tooltip
+                            title={row[col.key] ?? ''}
+                            arrow
+                            placement="bottom-start"
+                          >
+                            <Typography
+                              variant="body2"
+                              noWrap
+                              sx={{
+                                color: '#1f2937',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                display: 'block',
+                              }}
+                            >
+                              {row[col.key]}
+                            </Typography>
+                          </Tooltip>
+                        </TableCell>
+                      ))}
 
                       <TableCell align="right" sx={{ px: 3, py: 1.5 }}>
-                        <IconButton size="small" sx={{ width: 28, height: 28 }} onClick={() => handleOpenDrawer(row)}>
-                          <ArrowForwardIosIcon sx={{ fontSize: 14, color: '#0B3EE3' }} />
+                        <IconButton
+                          size="small"
+                          sx={{ width: 28, height: 28 }}
+                          onClick={() => handleOpenDrawer(row)}
+                        >
+                          <ArrowForwardIosIcon
+                            sx={{ fontSize: 14, color: '#0B3EE3' }}
+                          />
                         </IconButton>
                       </TableCell>
                     </TableRow>
@@ -413,6 +299,7 @@ const ProductsList = (json: ProductsListProps) => {
               </Table>
             </TableContainer>
           )}
+
           <CustomPaginator
             sortedData={filteredAndSortedData}
             page={page}
@@ -420,10 +307,16 @@ const ProductsList = (json: ProductsListProps) => {
             ROWS_PER_PAGE={rowsPerPage}
             setRowsPerPage={setRowsPerPage}
           />
+
           <DownloadCsvLink />
         </Box>
       </Box>
-      <ProductDetailsDrawer open={drawerOpen} onClose={handleDrawerClose} product={selectedProduct} />
+
+      <ProductDetailsDrawer
+        open={drawerOpen}
+        onClose={handleDrawerClose}
+        product={selectedProduct}
+      />
     </>
   )
 }

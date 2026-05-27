@@ -3,23 +3,30 @@ import { Box, Typography } from "@mui/material";
 import ProductsList from "../../components/ProductList/ProductList";
 import { theme } from "@pagopa/mui-italia";
 import ProductsListSkeleton from "../../components/ProductsListSkeleton/ProductsListSkeleton";
+import { getEligibleProducts } from "../../services/products/productsRepository";
+import { logger } from "../../services/logging/logger";
 
 const SearchProductPage = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<import("../../services/products/productsRepository").UiProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const doFetch = async () => {
-      await fetch(`${import.meta.env.BASE_URL}data/product_export.json`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Errore nel caricamento del file JSON");
-          return res.json();
-        })
-        .then((data) => setProducts(data))
-        .catch((err) => console.log(err.message))
-        .finally(() => setIsLoading(false));
-    }
-    doFetch();
+    const loadProducts = async () => {
+      try {
+        const data = await getEligibleProducts();
+        setProducts(data);
+      } catch (error) {
+        logger.error(
+          error instanceof Error
+            ? error.message
+            : "Unexpected error while loading products"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProducts();
   }, []);
 
   return (

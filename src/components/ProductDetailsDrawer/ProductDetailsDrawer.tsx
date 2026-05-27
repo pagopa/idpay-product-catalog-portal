@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { theme } from '@pagopa/mui-italia'
 import { useIsMobile } from '../../hooks/useIsMobile'
 import type { Product } from '../ProductList/ProductList'
+import { getInitiativeConfig } from '../../config/initiativeConfig'
 
 type Props = {
   open: boolean
@@ -69,7 +70,11 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
   const isMobile = useIsMobile()
   const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
-  const headerTitle = product?.productName ?? '-'
+  const headerTitle =
+    product?.fullProductName ||
+    product?.productName ||
+    `${product?.category ?? ''} ${product?.brand ?? ''} ${product?.model ?? ''}`.trim() ||
+    '-'
 
   const Header = (
     <Box position="relative" p={2} pb={1}>
@@ -91,19 +96,35 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
     </Box>
   )
 
+  const initiativeConfig = getInitiativeConfig()
+
   const Content = product ? (
     <Box p={2}>
-      <FieldRow label="Codice GTIN/EAN" value={product.gtin ?? '-'} />
-      <FieldRow label="Codice Prodotto" value={product.productCode ?? '-'} />
-      <FieldRow label="Categoria" value={product.category ?? '-'} />
-      <FieldRow label="Marca" value={product.brand ?? '-'} />
-      <FieldRow label="Modello" value={product.model ?? '-'} />
-      <FieldRow label="Capacità" value={product.capacity ?? '-'} />
-      <FieldRow label="Classe energetica" value={product.energyClass} />
-      <FieldRow
-        label="Paese di produzione"
-        value={countryLabel[product.countryOfProduction] ?? product.countryOfProduction}
-      />
+      {initiativeConfig.initiativeId === 'bonus-elettrodomestici' ? (
+        <>
+          <FieldRow label="Codice GTIN/EAN" value={product.gtin} />
+          <FieldRow label="Codice Prodotto" value={product.productCode} />
+          <FieldRow label="Categoria" value={product.category} />
+          <FieldRow label="Marca" value={product.brand} />
+          <FieldRow label="Modello" value={product.model} />
+          <FieldRow label="Capacità" value={product.capacity} />
+          <FieldRow label="Classe energetica" value={product.energyClass} />
+          <FieldRow
+            label="Paese di produzione"
+            value={
+              countryLabel[product.countryOfProduction ?? ''] ??
+              product.countryOfProduction
+            }
+          />
+        </>
+      ) : (
+        <>
+          <FieldRow label="Categoria" value={product.category} />
+          <FieldRow label="Marca" value={product.brand} />
+          <FieldRow label="Modello" value={product.model} />
+          <FieldRow label="Codice GTIN / EAN" value={product.gtin} />
+        </>
+      )}
     </Box>
   ) : null
 
