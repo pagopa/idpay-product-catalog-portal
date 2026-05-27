@@ -20,7 +20,7 @@ import { useIsMobile } from '../../hooks/useIsMobile'
 import MobileProductCard from './MobileProductCard'
 import { ProductDetailsDrawer } from '../ProductDetailsDrawer/ProductDetailsDrawer'
 import DownloadCsvLink from '../DownloadCsvLink/DownloadCsvLink'
-import { getInitiativeConfig } from '../../config/initiativeConfig'
+import { getInitiativeConfig } from '../../config/initiativeResolver'
 
 export const baseUrlEprel = "https://eprel.ec.europa.eu/screen/product";
 

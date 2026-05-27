@@ -1,6 +1,6 @@
 import { fetchWithResilience } from '../http/fetchWithResilience'
 import { logger } from '../logging/logger'
-import { getInitiativeConfig, INITIATIVE_ID } from '../../config/initiativeConfig'
+import { getInitiativeConfig, INITIATIVE_NAME } from '../../config/initiativeResolver'
 
 export type ProductRaw = Record<string, unknown>
 
@@ -102,9 +102,9 @@ const ADAPTERS: Record<string, ProductAdapter> = {
 }
 
 const getAdapter = (): ProductAdapter => {
-  const adapter = ADAPTERS[INITIATIVE_ID]
+  const adapter = ADAPTERS[INITIATIVE_NAME]
   if (!adapter) {
-    throw new Error(`No adapter found for initiative ${INITIATIVE_ID}`)
+    throw new Error(`No adapter found for initiative ${INITIATIVE_NAME}`)
   }
   return adapter
 }
@@ -119,10 +119,10 @@ export const getEligibleProducts = async (): Promise<UiProduct[]> => {
       'bonus-decoder': 'bonus_decoder_product_export.json',
     }
 
-    const datasetFile = datasetMap[INITIATIVE_ID]
+    const datasetFile = datasetMap[INITIATIVE_NAME]
 
     if (!datasetFile) {
-      throw new Error(`No dataset mapped for initiative ${INITIATIVE_ID}`)
+      throw new Error(`No dataset mapped for initiative ${INITIATIVE_NAME}`)
     }
 
     const response = await fetchWithResilience(

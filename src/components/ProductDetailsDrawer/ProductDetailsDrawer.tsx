@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { theme } from '@pagopa/mui-italia'
 import { useIsMobile } from '../../hooks/useIsMobile'
 import type { Product } from '../ProductList/ProductList'
-import { getInitiativeConfig } from '../../config/initiativeConfig'
+import { getInitiativeConfig } from '../../config/initiativeResolver'
 
 type Props = {
   open: boolean
@@ -100,7 +100,7 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
 
   const Content = product ? (
     <Box p={2}>
-      {initiativeConfig.initiativeId === 'bonus-elettrodomestici' ? (
+      {initiativeConfig.initiativeName === 'bonus-elettrodomestici' ? (
         <>
           <FieldRow label="Codice GTIN/EAN" value={product.gtin} />
           <FieldRow label="Codice Prodotto" value={product.productCode} />

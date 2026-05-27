@@ -5,10 +5,12 @@ import { theme } from "@pagopa/mui-italia";
 import ProductsListSkeleton from "../../components/ProductsListSkeleton/ProductsListSkeleton";
 import { getEligibleProducts } from "../../services/products/productsRepository";
 import { logger } from "../../services/logging/logger";
+import { getInitiativeConfig } from "../../config/initiativeResolver";
 
 const SearchProductPage = () => {
   const [products, setProducts] = useState<import("../../services/products/productsRepository").UiProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const initiativeConfig = getInitiativeConfig();
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -40,7 +42,7 @@ const SearchProductPage = () => {
           Consulta la lista per verificare se il prodotto che vuoi acquistare
         </Typography>
         <Typography variant="h6" fontWeight="400">
-          usando il Bonus Elettrodomestici è presente nell'elenco.
+          usando il {initiativeConfig.copy.bonusLabel} è presente nell'elenco.
         </Typography>
         <Typography variant="h6" fontWeight="400" gutterBottom>
           La lista è in aggiornamento.

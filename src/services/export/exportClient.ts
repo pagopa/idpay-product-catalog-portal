@@ -1,5 +1,5 @@
 import { fetchWithResilience } from '../http/fetchWithResilience'
-import { INITIATIVE_ID } from '../../config/initiativeConfig'
+import { INITIATIVE_NAME } from '../../config/initiativeResolver'
 import { logger } from '../logging/logger'
 
 export type ExportResponse = {
@@ -14,7 +14,7 @@ export const requestExport = async (): Promise<ExportResponse | null> => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ initiativeId: INITIATIVE_ID })
+      body: JSON.stringify({ initiativeName: INITIATIVE_NAME })
     })
 
     if (!response.ok) {
