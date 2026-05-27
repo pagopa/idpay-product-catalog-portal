@@ -99,38 +99,6 @@ const ADAPTERS: Record<string, ProductAdapter> = {
       gtin: raw.gtinCode
     }
   },
-
-  'bonus-tecnologia': (raw) => {
-    if (
-      typeof raw.brand !== 'string' ||
-      typeof raw.model !== 'string' ||
-      typeof raw.category !== 'string' ||
-      typeof raw.gtinCode !== 'string'
-    ) return null
-
-    return {
-      brand: raw.brand,
-      model: raw.model,
-      category: raw.category,
-      gtin: raw.gtinCode,
-      productCode:
-        typeof raw.productCode === 'string'
-          ? raw.productCode
-          : undefined,
-      ram:
-        typeof raw.ram === 'string'
-          ? raw.ram
-          : undefined,
-      storage:
-        typeof raw.storage === 'string'
-          ? raw.storage
-          : undefined,
-      processor:
-        typeof raw.processor === 'string'
-          ? raw.processor
-          : undefined
-    }
-  }
 }
 
 const getAdapter = (): ProductAdapter => {
@@ -149,7 +117,6 @@ export const getEligibleProducts = async (): Promise<UiProduct[]> => {
     const datasetMap: Record<string, string> = {
       'bonus-elettrodomestici': 'bonus_elettrodomestici_product_export.json',
       'bonus-decoder': 'bonus_decoder_product_export.json',
-      'bonus-tecnologia': 'bonus_tecnologia_product_export.json'
     }
 
     const datasetFile = datasetMap[INITIATIVE_ID]
