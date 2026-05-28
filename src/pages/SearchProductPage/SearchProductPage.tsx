@@ -36,17 +36,16 @@ const SearchProductPage = () => {
     <>
       <Box textAlign="center" py={6} px={2} bgcolor={theme.palette.primary.contrastText}>
         <Typography variant="h1" fontWeight="700" gutterBottom>
-          Cerca un prodotto
+          {initiativeConfig.copy.searchPage.title}
         </Typography>
 
-        <Typography variant="h6" fontWeight="400">
-          Consulta la lista per verificare se il prodotto che vuoi acquistare
-        </Typography>
-        <Typography variant="h6" fontWeight="400">
-          usando il {initiativeConfig.copy.bonusLabel} è presente nell'elenco.
-        </Typography>
-        <Typography variant="h6" fontWeight="400" gutterBottom>
-          La lista è in aggiornamento.
+        <Typography
+          variant="h6"
+          fontWeight="400"
+          gutterBottom
+          sx={{ whiteSpace: "pre-line" }}
+        >
+          {initiativeConfig.copy.searchPage.description}
         </Typography>
       </Box>
 

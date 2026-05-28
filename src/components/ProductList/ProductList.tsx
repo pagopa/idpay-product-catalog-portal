@@ -32,6 +32,7 @@ interface Column {
   label: string
   align: 'left' | 'center' | 'right' | 'inherit' | 'justify'
   width: string
+  sortable: boolean
 }
 
 const ProductsList = ({ data: rawData }: { data: Product[] }) => {
@@ -43,8 +44,9 @@ const ProductsList = ({ data: rawData }: { data: Product[] }) => {
       label: col.label,
       align: 'left' as const,
       width: '20%',
+      sortable: col.sortable,
     })),
-    { id: 'actions', label: '', align: 'right', width: '7%' },
+    { id: 'actions', label: '', align: 'right', width: '7%', sortable: false },
   ]
 
   const [orderBy, setOrderBy] = useState<keyof Product>('category')
@@ -110,6 +112,9 @@ const ProductsList = ({ data: rawData }: { data: Product[] }) => {
   }
 
   const handleSort = (property: keyof Product) => {
+    const columnConfig = columns.find((c) => c.id === property)
+    if (!columnConfig?.sortable) return
+
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
     setOrderBy(property)
@@ -216,7 +221,7 @@ const ProductsList = ({ data: rawData }: { data: Product[] }) => {
                           verticalAlign: 'bottom',
                         }}
                       >
-                        {col.id !== 'actions' ? (
+                        {col.id !== 'actions' && col.sortable ? (
                           <TableSortLabel
                             active={orderBy === col.id}
                             direction={orderBy === col.id ? order : 'asc'}

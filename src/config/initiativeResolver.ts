@@ -10,6 +10,7 @@ export type InitiativeConfig = {
   tableColumns: {
     key: string
     label: string
+    sortable: boolean
     link?: {
       type: 'eprel'
     }
@@ -23,6 +24,10 @@ export type InitiativeConfig = {
   copy: {
     bonusLabel: string
     realizationPrefix: string
+    searchPage: {
+      title: string
+      description: string
+    }
   }
 }
 
