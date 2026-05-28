@@ -21,8 +21,7 @@ import MobileProductCard from './MobileProductCard'
 import { ProductDetailsDrawer } from '../ProductDetailsDrawer/ProductDetailsDrawer'
 import DownloadCsvLink from '../DownloadCsvLink/DownloadCsvLink'
 import { getInitiativeConfig } from '../../config/initiativeResolver'
-
-export const baseUrlEprel = "https://eprel.ec.europa.eu/screen/product";
+import { BASE_URL_EPREL } from '../../utils/constants'
 
 export interface Product {
   [key: string]: string | undefined
@@ -254,33 +253,57 @@ const ProductsList = ({ data: rawData }: { data: Product[] }) => {
                         borderBottom: '2px solid #E3E7EB',
                       }}
                     >
-                      {initiativeConfig.tableColumns.map((col) => (
-                        <TableCell
-                          key={col.key}
-                          align="left"
-                          sx={{ px: 3, py: 1.5 }}
-                        >
-                          <Tooltip
-                            title={row[col.key] ?? ''}
-                            arrow
-                            placement="bottom-start"
+                      {initiativeConfig.tableColumns.map((col) => {
+                        const cellValue = row[col.key]
+                        const isEprelLink = col.link?.type === 'eprel'
+                        const canOpen =
+                          isEprelLink &&
+                          row.eprelCode &&
+                          row.productGroup
+
+                        return (
+                          <TableCell
+                            key={col.key}
+                            align="left"
+                            sx={{ px: 3, py: 1.5 }}
                           >
-                            <Typography
-                              variant="body2"
-                              noWrap
-                              sx={{
-                                color: '#1f2937',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                                display: 'block',
-                              }}
+                            <Tooltip
+                              title={cellValue ?? ''}
+                              arrow
+                              placement="bottom-start"
                             >
-                              {row[col.key]}
-                            </Typography>
-                          </Tooltip>
-                        </TableCell>
-                      ))}
+                              <Typography
+                                variant="body2"
+                                noWrap
+                                sx={{
+                                  color: canOpen ? '#0B3EE3' : '#1f2937',
+                                  fontWeight: canOpen
+                                    ? theme.typography.fontWeightBold
+                                    : undefined,
+                                  cursor: canOpen ? 'pointer' : 'default',
+                                  textDecoration: canOpen
+                                    ? 'underline'
+                                    : 'none',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                  display: 'block',
+                                }}
+                                onClick={() => {
+                                  if (canOpen) {
+                                    window.open(
+                                      `${BASE_URL_EPREL}/${row.productGroup}/${row.eprelCode}`,
+                                      '_blank'
+                                    )
+                                  }
+                                }}
+                              >
+                                {cellValue || '-'}
+                              </Typography>
+                            </Tooltip>
+                          </TableCell>
+                        )
+                      })}
 
                       <TableCell align="right" sx={{ px: 3, py: 1.5 }}>
                         <IconButton

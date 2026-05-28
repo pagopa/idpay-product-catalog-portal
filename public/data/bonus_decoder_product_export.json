@@ -1,75 +1,5 @@
 [
   {
-    "gtinCode": "DECODER11",
-    "model": "SAT01",
-    "category": "Satellitare",
-    "brand": "SAT01",
-    "productCode": "SAT01"
-  },
-  {
-    "gtinCode": "DECODER12",
-    "model": "SAT02",
-    "category": "Satellitare",
-    "brand": "SAT02",
-    "productCode": "SAT02"
-  },
-  {
-    "gtinCode": "DECODER13",
-    "model": "SAT03",
-    "category": "Satellitare",
-    "brand": "SAT03",
-    "productCode": "SAT03"
-  },
-  {
-    "gtinCode": "DECODER14",
-    "model": "SAT04",
-    "category": "Satellitare",
-    "brand": "SAT04",
-    "productCode": "SAT04"
-  },
-  {
-    "gtinCode": "DECODER15",
-    "model": "SAT05",
-    "category": "Satellitare",
-    "brand": "SAT05",
-    "productCode": "SAT05"
-  },
-  {
-    "gtinCode": "GTIN123ABC4201",
-    "model": "ModelloX100",
-    "category": "Satellitare",
-    "brand": "MarcaEsempio",
-    "productCode": "SKU98765"
-  },
-  {
-    "gtinCode": "GTIN123ABC0001",
-    "model": "ModelloX100",
-    "category": "Satellitare",
-    "brand": "MarcaEsempio",
-    "productCode": "SKU98765"
-  },
-  {
-    "gtinCode": "GTIN123ABC4567",
-    "model": "Modello/X.100",
-    "category": "Satellitare",
-    "brand": "Marca & Esempio",
-    "productCode": "SKU98765"
-  },
-  {
-    "gtinCode": "GTIN123ABC45",
-    "model": "Modello X100",
-    "category": "Satellitare",
-    "brand": "Marca Esempio",
-    "productCode": "SKU98765"
-  },
-  {
-    "gtinCode": "GTIN123ABC4568",
-    "model": "Modello/X.100",
-    "category": "Satellitare",
-    "brand": "Marca & Esempio",
-    "productCode": "SKU-98765"
-  },
-  {
     "initiativeId": "6a0dc502b077e7c0d0e5324a",
     "gtinCode": "DECODER08",
     "organizationId": "999e1892-08e8-4d13-bec9-54814cd31b0c",
@@ -77,8 +7,8 @@
     "status": "UPLOADED",
     "model": "TR08",
     "category": "Terrestre",
-    "brand": "TR08",
-    "productCode": "TR08",
+    "brand": "Brand TR08",
+    "productCode": "Code TR08",
     "batchName": "Terrestre_6a1414701e39a784151e65a9.csv",
     "productName": "Terrestre TR08 TR08",
     "fullProductName": "DECODER08 - Terrestre TR08 TR08",

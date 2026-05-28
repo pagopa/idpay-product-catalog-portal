@@ -1,12 +1,10 @@
 import { fetchWithResilience } from '../http/fetchWithResilience'
 import { logger } from '../logging/logger'
-import { getInitiativeConfig, INITIATIVE_NAME } from '../../config/initiativeResolver'
+import { getInitiativeConfig, getInitiativeAdapter, INITIATIVE_NAME } from '../../config/initiativeResolver.ts'
 
 export type ProductRaw = Record<string, unknown>
 
 export type UiProduct = Record<string, string | undefined>
-
-type ProductAdapter = (raw: ProductRaw) => UiProduct | null
 
 const sanitizeString = (value: unknown): unknown => {
   if (typeof value !== 'string') return value
@@ -29,84 +27,8 @@ const structuralValidation = (data: unknown): ProductRaw[] => {
   return data.filter((item) => typeof item === 'object' && item !== null) as ProductRaw[]
 }
 
-/**
- * Mock adapters per initiative
- * In production these would be separated per file.
- */
-const ADAPTERS: Record<string, ProductAdapter> = {
-  'bonus-elettrodomestici': (raw) => {
-    if (
-      typeof raw.brand !== 'string' ||
-      typeof raw.model !== 'string' ||
-      typeof raw.gtin !== 'string' ||
-      typeof raw.category !== 'string'
-    ) return null
-
-    const categoryLabel: Record<string, string> = {
-      WASHINGMACHINES: 'Lavatrice',
-      WASHERDRIERS: 'Lavasciuga',
-      OVENS: 'Forno',
-      RANGEHOODS: 'Cappa da cucina',
-      DISHWASHERS: 'Lavastoviglie',
-      TUMBLEDRYERS: 'Asciugatrice',
-      REFRIGERATINGAPPL: 'Apparecchio di refrigerazione',
-      COOKINGHOBS: 'Piano cottura'
-    }
-
-    return {
-      brand: raw.brand,
-      model: raw.model,
-      gtin: raw.gtin,
-      productCode:
-        typeof raw.productCode === 'string'
-          ? raw.productCode
-          : undefined,
-      capacity:
-        typeof raw.capacity === 'string'
-          ? raw.capacity
-          : undefined,
-      category: categoryLabel[raw.category] ?? raw.category,
-      countryOfProduction:
-        typeof raw.countryOfProduction === 'string'
-          ? raw.countryOfProduction
-          : undefined,
-      energyClass:
-        typeof raw.energyClass === 'string'
-          ? raw.energyClass
-          : undefined,
-      eprelCode:
-        typeof raw.eprelCode === 'string'
-          ? raw.eprelCode
-          : undefined,
-      productGroup:
-        typeof raw.productGroup === 'string'
-          ? raw.productGroup
-          : undefined
-    }
-  },
-  'bonus-decoder': (raw) => {
-    if (
-      typeof raw.brand !== 'string' ||
-      typeof raw.model !== 'string' ||
-      typeof raw.category !== 'string' ||
-      typeof raw.gtinCode !== 'string'
-    ) return null
-
-    return {
-      brand: raw.brand,
-      model: raw.model,
-      category: raw.category,
-      gtin: raw.gtinCode
-    }
-  },
-}
-
-const getAdapter = (): ProductAdapter => {
-  const adapter = ADAPTERS[INITIATIVE_NAME]
-  if (!adapter) {
-    throw new Error(`No adapter found for initiative ${INITIATIVE_NAME}`)
-  }
-  return adapter
+const getAdapter = () => {
+  return getInitiativeAdapter()
 }
 
 export const getEligibleProducts = async (): Promise<UiProduct[]> => {
@@ -114,15 +36,10 @@ export const getEligibleProducts = async (): Promise<UiProduct[]> => {
   const adapter = getAdapter()
 
   try {
-    const datasetMap: Record<string, string> = {
-      'bonus-elettrodomestici': 'bonus_elettrodomestici_product_export.json',
-      'bonus-decoder': 'bonus_decoder_product_export.json',
-    }
-
-    const datasetFile = datasetMap[INITIATIVE_NAME]
+    const { datasetFile } = getInitiativeConfig()
 
     if (!datasetFile) {
-      throw new Error(`No dataset mapped for initiative ${INITIATIVE_NAME}`)
+      throw new Error(`No dataset configured for initiative ${INITIATIVE_NAME}`)
     }
 
     const response = await fetchWithResilience(

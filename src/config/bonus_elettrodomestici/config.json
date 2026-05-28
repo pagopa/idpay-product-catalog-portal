@@ -12,7 +12,18 @@
     { "key": "brand", "label": "Marca" },
     { "key": "model", "label": "Modello" },
     { "key": "gtin", "label": "Codice GTIN / EAN" },
-    { "key": "eprelCode", "label": "Codice EPREL" }
+    { "key": "eprelCode", "label": "Codice EPREL", "link": { "type": "eprel" } }
+  ],
+  "datasetFile": "bonus_elettrodomestici_product_export.json",
+  "detailFields": [
+    { "key": "gtin", "label": "Codice GTIN/EAN" },
+    { "key": "productCode", "label": "Codice Prodotto" },
+    { "key": "category", "label": "Categoria" },
+    { "key": "brand", "label": "Marca" },
+    { "key": "model", "label": "Modello" },
+    { "key": "capacity", "label": "Capacità" },
+    { "key": "energyClass", "label": "Classe energetica" },
+    { "key": "countryOfProduction", "label": "Paese di produzione", "formatter": "country" }
   ],
   "copy": {
     "bonusLabel": "Bonus Elettrodomestici",

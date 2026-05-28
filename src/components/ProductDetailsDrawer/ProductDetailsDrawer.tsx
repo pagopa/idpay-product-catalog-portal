@@ -71,9 +71,7 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
   const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
   const headerTitle =
-    product?.fullProductName ||
     product?.productName ||
-    `${product?.category ?? ''} ${product?.brand ?? ''} ${product?.model ?? ''}`.trim() ||
     '-'
 
   const Header = (
@@ -98,33 +96,34 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
 
   const initiativeConfig = getInitiativeConfig()
 
+  const formatValue = (
+    value: string | undefined,
+    formatter?: 'country'
+  ): string | undefined => {
+    if (!value) return value
+
+    if (formatter === 'country') {
+      return countryLabel[value] ?? value
+    }
+
+    return value
+  }
+
   const Content = product ? (
     <Box p={2}>
-      {initiativeConfig.initiativeName === 'bonus-elettrodomestici' ? (
-        <>
-          <FieldRow label="Codice GTIN/EAN" value={product.gtin} />
-          <FieldRow label="Codice Prodotto" value={product.productCode} />
-          <FieldRow label="Categoria" value={product.category} />
-          <FieldRow label="Marca" value={product.brand} />
-          <FieldRow label="Modello" value={product.model} />
-          <FieldRow label="Capacità" value={product.capacity} />
-          <FieldRow label="Classe energetica" value={product.energyClass} />
+      {initiativeConfig.detailFields.map((field) => {
+        const rawValue = product[field.key as keyof Product] as
+          | string
+          | undefined
+
+        return (
           <FieldRow
-            label="Paese di produzione"
-            value={
-              countryLabel[product.countryOfProduction ?? ''] ??
-              product.countryOfProduction
-            }
+            key={field.key}
+            label={field.label}
+            value={formatValue(rawValue, field.formatter)}
           />
-        </>
-      ) : (
-        <>
-          <FieldRow label="Categoria" value={product.category} />
-          <FieldRow label="Marca" value={product.brand} />
-          <FieldRow label="Modello" value={product.model} />
-          <FieldRow label="Codice GTIN / EAN" value={product.gtin} />
-        </>
-      )}
+        )
+      })}
     </Box>
   ) : null
 

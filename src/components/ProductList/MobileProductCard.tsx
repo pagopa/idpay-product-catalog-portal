@@ -1,7 +1,9 @@
 import { Card, CardContent, Typography, Box } from '@mui/material'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
-import { baseUrlEprel, type Product } from '../ProductList/ProductList'
+import { BASE_URL_EPREL } from '../../utils/constants'
 import { ButtonNaked, theme } from '@pagopa/mui-italia'
+import { getInitiativeConfig } from '../../config/initiativeResolver'
+import type { Product } from "./ProductList.tsx";
 
 interface MobileProductCardProps {
   product: Product
@@ -9,6 +11,8 @@ interface MobileProductCardProps {
 }
 
 const MobileProductCard = ({ product, onClick }: MobileProductCardProps) => {
+  const initiativeConfig = getInitiativeConfig()
+
   return (
     <Card
       elevation={2}
@@ -23,54 +27,53 @@ const MobileProductCard = ({ product, onClick }: MobileProductCardProps) => {
       }}
     >
       <CardContent sx={{ px: 3 }}>
-        <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontWeight: theme.typography.fontWeightBold }}>
-          Categoria
-        </Typography>
-        <Typography variant="body2" sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', mb: 2, color: theme.palette.text.primary, fontWeight: theme.typography.fontWeightMedium }}>
-          {product.category}
-        </Typography>
+        {initiativeConfig.tableColumns.map((col) => {
+          const value = product[col.key]
+          const isEprelLink = col.link?.type === 'eprel'
+          const canOpen =
+            isEprelLink &&
+            product.eprelCode &&
+            product.productGroup
 
-        <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontWeight: theme.typography.fontWeightBold }}>
-          Marca
-        </Typography>
-        <Typography variant="body2" sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', mb: 2, color: theme.palette.text.primary, fontWeight: theme.typography.fontWeightMedium }}>
-          {product.brand}
-        </Typography>
+          return (
+            <Box key={col.key} mb={2}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: theme.palette.text.primary,
+                  fontWeight: theme.typography.fontWeightBold,
+                }}
+              >
+                {col.label}
+              </Typography>
 
-        <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontWeight: theme.typography.fontWeightBold }}>
-          Modello
-        </Typography>
-        <Typography variant="body2" sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', mb: 2, color: theme.palette.text.primary, fontWeight: theme.typography.fontWeightMedium }}>
-          {product.model}
-        </Typography>
-
-        <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontWeight: theme.typography.fontWeightBold }}>
-          Codice GTIN/EAN
-        </Typography>
-        <Typography variant="body2" sx={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', mb: 2, color: theme.palette.text.primary, fontWeight: theme.typography.fontWeightMedium }}>
-          {product.gtin}
-        </Typography>
-
-        <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontWeight: theme.typography.fontWeightBold }}>
-          Codice EPREL
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            mb: 2,
-            color: (product.eprelCode && product.productGroup) ? '#0B3EE3' : '',
-            fontWeight: theme.typography.fontWeightBold,
-            textDecoration: (product.eprelCode && product.productGroup) ? 'underline' : 'none',
-            overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block',
-          }}
-          onClick={() => {
-            if (product.eprelCode && product.productGroup) {
-              window.open(`${baseUrlEprel}/${product.productGroup}/${product.eprelCode}`, '_blank');
-            }
-          }}
-        >
-          {product.eprelCode || '-'}
-        </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: canOpen ? '#0B3EE3' : theme.palette.text.primary,
+                  fontWeight: canOpen
+                    ? theme.typography.fontWeightBold
+                    : theme.typography.fontWeightMedium,
+                  textDecoration: canOpen ? 'underline' : 'none',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  display: 'block',
+                }}
+                onClick={() => {
+                  if (canOpen) {
+                    window.open(
+                      `${BASE_URL_EPREL}/${product.productGroup}/${product.eprelCode}`,
+                      '_blank'
+                    )
+                  }
+                }}
+              >
+                {value || '-'}
+              </Typography>
+            </Box>
+          )
+        })}
 
         <Box display="flex" justifyContent="flex-end" sx={{ mt: 1 }}>
           <ButtonNaked

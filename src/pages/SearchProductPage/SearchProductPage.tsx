@@ -4,11 +4,12 @@ import ProductsList from "../../components/ProductList/ProductList";
 import { theme } from "@pagopa/mui-italia";
 import ProductsListSkeleton from "../../components/ProductsListSkeleton/ProductsListSkeleton";
 import { getEligibleProducts } from "../../services/products/productsRepository";
+import type { UiProduct } from "../../services/products/productsRepository";
 import { logger } from "../../services/logging/logger";
 import { getInitiativeConfig } from "../../config/initiativeResolver";
 
 const SearchProductPage = () => {
-  const [products, setProducts] = useState<import("../../services/products/productsRepository").UiProduct[]>([]);
+  const [products, setProducts] = useState<UiProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const initiativeConfig = getInitiativeConfig();
 
