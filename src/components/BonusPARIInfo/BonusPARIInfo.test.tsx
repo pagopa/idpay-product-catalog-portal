@@ -4,16 +4,27 @@ import { BonusPariInfo } from './BonusPARIInfo';
 
 vi.mock('../../assets/PARI.png', () => ({ default: 'pari.png' }));
 
+// Component reads initiative-dependent copy via getInitiativeConfig().
+// In unit tests we mock it to avoid relying on process env (INITIATIVE_NAME).
+vi.mock('../../config/initiativeResolver', () => ({
+  getInitiativeConfig: () => ({
+    copy: {
+      realizationPrefix: 'Il Bonus Elettrodomestici è realizzato tramite',
+    },
+  }),
+}));
+
 vi.mock('@pagopa/mui-italia', async () => {
-  const actual = await vi.importActual<typeof import('@pagopa/mui-italia')>('@pagopa/mui-italia');
+  const actual =
+    await vi.importActual<typeof import('@pagopa/mui-italia')>('@pagopa/mui-italia');
   return {
     ...actual,
     theme: {
       palette: {
         primary: { contrastText: '#fff' },
-        divider: '#ccc'
-      }
-    }
+        divider: '#ccc',
+      },
+    },
   };
 });
 

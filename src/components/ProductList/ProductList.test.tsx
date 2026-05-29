@@ -2,6 +2,21 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ProductList from './ProductList';
 
+// Component reads initiative-dependent copy/config via getInitiativeConfig().
+// In unit tests we mock it to avoid relying on process env (INITIATIVE_NAME).
+vi.mock('../../config/initiativeResolver', () => ({
+  getInitiativeConfig: () => ({
+    // ProductList builds MUI table columns from this config
+    tableColumns: [
+      { key: 'category', label: 'Categoria', sortable: true },
+      { key: 'brand', label: 'Marca', sortable: true },
+      // Needed for EPREL link test (clickable cell)
+      { key: 'eprelCode', label: 'EPREL', sortable: false, link: { type: 'eprel' } },
+    ],
+    copy: {},
+  }),
+}));
+
 vi.mock('../../hooks/useIsMobile', () => ({
   useIsMobile: vi.fn()
 }));
@@ -110,8 +125,9 @@ describe('ProductList', () => {
 
     render(<ProductList data={mockData} />);
 
-    expect(screen.getByText('ModelA')).toBeInTheDocument();
-    expect(screen.getByText('ModelB')).toBeInTheDocument();
+    // Mobile cards render the initiative-configured fields, not necessarily `model`
+    expect(screen.getByText('BrandA')).toBeInTheDocument();
+    expect(screen.getByText('BrandB')).toBeInTheDocument();
   });
 
   it('renders desktop table when isMobile is false', () => {
@@ -128,8 +144,9 @@ describe('ProductList', () => {
 
     render(<ProductList data={mockData} />);
 
-    const detailsButton = screen.getAllByRole('button').find((button) => button.textContent === '');
-    fireEvent.click(detailsButton!);
+    // Click the last "row action" icon button (second row -> ModelB)
+    const actionButtons = screen.getAllByTestId('ArrowForwardIosIcon');
+    fireEvent.click(actionButtons[1]);
 
     expect(screen.getByTestId('drawer-open')).toBeInTheDocument();
     expect(screen.getByText('open')).toBeInTheDocument();
@@ -154,7 +171,10 @@ describe('ProductList', () => {
 
     fireEvent.click(screen.getByText('search-model'));
     expect(screen.getByTestId('filtered-count')).toHaveTextContent('1');
-    expect(screen.getByText('ModelA')).toBeInTheDocument();
+
+    // On desktop view, the table doesn't render "ModelA" because "model" is not a column.
+    // Assert using the visible columns (e.g. brand/category).
+    expect(screen.getByText('BrandA')).toBeInTheDocument();
 
     fireEvent.click(screen.getByText('filter-category'));
     fireEvent.click(screen.getByText('filter-class'));
@@ -179,8 +199,8 @@ describe('ProductList', () => {
       '_blank'
     );
 
-    const detailsButton = screen.getAllByRole('button').find((button) => button.textContent === '');
-    fireEvent.click(detailsButton!);
+    const actionButtons = screen.getAllByTestId('ArrowForwardIosIcon');
+    fireEvent.click(actionButtons[0]);
     expect(screen.getByText('open')).toBeInTheDocument();
     fireEvent.click(screen.getByText('close-drawer'));
     expect(screen.getByText('closed')).toBeInTheDocument();

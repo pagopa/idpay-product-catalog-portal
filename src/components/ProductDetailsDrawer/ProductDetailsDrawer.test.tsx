@@ -2,6 +2,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ProductDetailsDrawer } from './ProductDetailsDrawer';
 
+// Component reads initiative-dependent config via getInitiativeConfig().
+// In unit tests we mock it to avoid relying on process env (INITIATIVE_NAME).
+vi.mock('../../config/initiativeResolver', () => ({
+  getInitiativeConfig: () => ({
+    detailFields: [
+      { key: 'model', label: 'Modello' },
+      { key: 'countryOfProduction', label: 'Paese di produzione', formatter: 'country' },
+      { key: 'capacity', label: 'Capacità' },
+      { key: 'productCode', label: 'Codice prodotto' },
+    ],
+    copy: {},
+  }),
+}));
+
 vi.mock('@mui/material', async () => {
   const actual = await vi.importActual<typeof import('@mui/material')>('@mui/material');
   return {
@@ -142,7 +156,10 @@ describe('ProductDetailsDrawer', () => {
 
     expect(screen.getByText('FallbackModel')).toBeInTheDocument();
     expect(screen.getByText('US')).toBeInTheDocument();
-    expect(screen.getAllByText('-')).toHaveLength(4);
+
+    // With mocked initiativeConfig.detailFields, only missing fields among those are rendered as '-'
+    // (capacity + productCode + headerTitle when productName is missing)
+    expect(screen.getAllByText('-')).toHaveLength(3);
   });
 
   it('honors forceMode drawer on mobile', () => {
