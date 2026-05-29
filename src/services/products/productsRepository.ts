@@ -1,39 +1,12 @@
 import { fetchWithResilience } from '../http/fetchWithResilience'
 import { logger } from '../logging/logger'
 import { getInitiativeConfig, getInitiativeAdapter, INITIATIVE_NAME } from '../../config/initiativeResolver.ts'
-
-export type ProductRaw = Record<string, unknown>
-
-export type UiProduct = Record<string, string | undefined>
-
-const sanitizeString = (value: unknown): unknown => {
-  if (typeof value !== 'string') return value
-  return value.replace(/[\r\n]/g, '').trim()
-}
-
-const sanitizeObject = (obj: ProductRaw): ProductRaw => {
-  const sanitized: ProductRaw = {}
-  for (const key of Object.keys(obj)) {
-    sanitized[key] = sanitizeString(obj[key])
-  }
-  return sanitized
-}
-
-const structuralValidation = (data: unknown): ProductRaw[] => {
-  if (!Array.isArray(data)) {
-    throw new Error('Dataset is not an array')
-  }
-
-  return data.filter((item) => typeof item === 'object' && item !== null) as ProductRaw[]
-}
-
-const getAdapter = () => {
-  return getInitiativeAdapter()
-}
+import type { UiProduct } from './types'
+import { sanitizeObject, structuralValidation } from '../../utils/functions'
 
 export const getEligibleProducts = async (): Promise<UiProduct[]> => {
   getInitiativeConfig()
-  const adapter = getAdapter()
+  const adapter = getInitiativeAdapter()
 
   try {
     const { datasetFile } = getInitiativeConfig()

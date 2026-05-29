@@ -1,8 +1,3 @@
-/**
- * Logger abstraction.
- * No direct console usage outside this module.
- */
-
 type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 
 const isDev = import.meta.env.DEV
@@ -16,8 +11,6 @@ const log = (level: LogLevel, message: unknown): void => {
   const sanitized = sanitize(message)
 
   if (!isDev) {
-    // In production we currently no-op.
-    // Hook external logging here if needed.
     return
   }
 
