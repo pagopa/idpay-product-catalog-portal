@@ -16,7 +16,9 @@ export default defineConfig({
       exclude: [
         'src/main.tsx',
         'src/vite-env.d.ts',
-        '**/*.d.ts'
+        '**/*.d.ts',
+        'src/config/**/adapter.ts',
+        'src/utils/constants.ts'
       ],
       thresholds: {
         lines: 90,

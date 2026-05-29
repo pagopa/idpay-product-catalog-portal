@@ -4,8 +4,6 @@ import { BonusPariInfo } from './BonusPARIInfo';
 
 vi.mock('../../assets/PARI.png', () => ({ default: 'pari.png' }));
 
-// Component reads initiative-dependent copy via getInitiativeConfig().
-// In unit tests we mock it to avoid relying on process env (INITIATIVE_NAME).
 vi.mock('../../config/initiativeResolver', () => ({
   getInitiativeConfig: () => ({
     copy: {
@@ -49,6 +47,7 @@ describe('BonusPariInfo', () => {
       'https://developer.pagopa.it/pari/overview'
     );
     expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener');
   });
 
   it('renders descriptive paragraph', () => {

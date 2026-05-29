@@ -2,15 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ProductList from './ProductList';
 
-// Component reads initiative-dependent copy/config via getInitiativeConfig().
-// In unit tests we mock it to avoid relying on process env (INITIATIVE_NAME).
 vi.mock('../../config/initiativeResolver', () => ({
   getInitiativeConfig: () => ({
-    // ProductList builds MUI table columns from this config
     tableColumns: [
       { key: 'category', label: 'Categoria', sortable: true },
       { key: 'brand', label: 'Marca', sortable: true },
-      // Needed for EPREL link test (clickable cell)
       { key: 'eprelCode', label: 'EPREL', sortable: false, link: { type: 'eprel' } },
     ],
     copy: {},
@@ -125,7 +121,6 @@ describe('ProductList', () => {
 
     render(<ProductList data={mockData} />);
 
-    // Mobile cards render the initiative-configured fields, not necessarily `model`
     expect(screen.getByText('BrandA')).toBeInTheDocument();
     expect(screen.getByText('BrandB')).toBeInTheDocument();
   });
@@ -144,7 +139,6 @@ describe('ProductList', () => {
 
     render(<ProductList data={mockData} />);
 
-    // Click the last "row action" icon button (second row -> ModelB)
     const actionButtons = screen.getAllByTestId('ArrowForwardIosIcon');
     fireEvent.click(actionButtons[1]);
 
@@ -172,8 +166,6 @@ describe('ProductList', () => {
     fireEvent.click(screen.getByText('search-model'));
     expect(screen.getByTestId('filtered-count')).toHaveTextContent('1');
 
-    // On desktop view, the table doesn't render "ModelA" because "model" is not a column.
-    // Assert using the visible columns (e.g. brand/category).
     expect(screen.getByText('BrandA')).toBeInTheDocument();
 
     fireEvent.click(screen.getByText('filter-category'));

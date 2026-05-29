@@ -51,4 +51,16 @@ describe('useIsMobile', () => {
     const expectedQuery = theme.breakpoints.down('sm');
     expect(mediaSpy).toHaveBeenCalledWith(expectedQuery);
   });
+
+  it('calls useTheme internally to compute the breakpoint query', async () => {
+    const mui = await import('@mui/material');
+    const themeSpy = vi.spyOn(mui, 'useTheme');
+
+    const mediaSpy = useMediaQuery as unknown as ReturnType<typeof vi.fn>;
+    mediaSpy.mockReturnValue(false);
+
+    renderHook(() => useIsMobile(), { wrapper });
+
+    expect(themeSpy).toHaveBeenCalled();
+  });
 });

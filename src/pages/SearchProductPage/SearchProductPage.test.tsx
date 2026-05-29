@@ -2,8 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import SearchProductPage from './SearchProductPage';
 
-// Component reads initiative-dependent copy via getInitiativeConfig().
-// In unit tests we mock it to avoid relying on process env (INITIATIVE_NAME).
 vi.mock('../../config/initiativeResolver', async () => {
   const actual =
     await vi.importActual<typeof import('../../config/initiativeResolver')>(
@@ -27,7 +25,7 @@ vi.mock('../../config/initiativeResolver', async () => {
 
 vi.mock('../../components/ProductList/ProductList', () => ({
   default: ({ data }: { data: unknown[] }) => (
-    <div data-testid="product-list">Loaded {data.length}</div>
+    <div data-testid="product-list">Loaded {data?.length}</div>
   ),
 }));
 
@@ -44,17 +42,18 @@ import { getEligibleProducts } from '../../services/products/productsRepository'
 describe('SearchProductPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // SearchProductPage uses `getEligibleProducts()` (not fetch directly)
     global.fetch = vi.fn();
   });
 
-  it('renders header texts', () => {
+  it('renders header texts', async () => {
     render(<SearchProductPage />);
 
-    expect(screen.getByText('Cerca un prodotto')).toBeInTheDocument();
-    expect(
-      screen.getByText(/Consulta la lista per verificare/)
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Cerca un prodotto')).toBeInTheDocument();
+      expect(
+        screen.getByText(/Consulta la lista per verificare/)
+      ).toBeInTheDocument();
+    });
   });
 
   it('shows skeleton while loading and then renders product list', async () => {
@@ -85,11 +84,9 @@ describe('SearchProductPage', () => {
     render(<SearchProductPage />);
 
     await waitFor(() => {
-      // On error we still end loading and render the list with 0 products
       expect(screen.getByTestId('product-list')).toHaveTextContent('Loaded 0');
     });
 
-    // logger.error ultimately writes to console.error
     expect(errorSpy).toHaveBeenCalled();
   });
 });

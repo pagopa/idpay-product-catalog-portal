@@ -2,8 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MobileProductCard from './MobileProductCard';
 
-// Component reads initiative-dependent config via getInitiativeConfig().
-// In unit tests we mock it to avoid relying on process env (INITIATIVE_NAME).
 vi.mock('../../config/initiativeResolver', () => ({
   getInitiativeConfig: () => ({
     tableColumns: [
