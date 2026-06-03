@@ -4,9 +4,9 @@ import ProductsList from "../../components/ProductList/ProductList";
 import { theme } from "@pagopa/mui-italia";
 import ProductsListSkeleton from "../../components/ProductsListSkeleton/ProductsListSkeleton";
 import { getEligibleProducts } from "../../services/products/productsRepository";
-import type { UiProduct } from "../../services/products/productsRepository";
-import { logger } from "../../services/logging/logger";
+import type { UiProduct } from '../../services/products/types'
 import { getInitiativeConfig } from "../../config/initiativeResolver";
+import { logger } from "../../services/logging/logger";
 
 const SearchProductPage = () => {
   const [products, setProducts] = useState<UiProduct[]>([]);
