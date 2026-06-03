@@ -11,6 +11,7 @@ const DEFAULT_TIMEOUT = 8000
 const DEFAULT_RETRIES = 3
 const FAILURE_THRESHOLD = 3
 const COOL_DOWN_MS = 10000
+const MAX_JITTER_MS = 100
 
 let failureCount = 0
 let circuitState: CircuitState = 'CLOSED'
@@ -18,6 +19,13 @@ let lastFailureTime = 0
 
 const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms))
+
+const getSecureJitter = (maxMs: number): number => {
+  const values = new Uint32Array(1)
+  crypto.getRandomValues(values)
+
+  return (values[0] / 0xffffffff) * maxMs
+}
 
 const shouldRetry = (response?: Response, error?: unknown): boolean => {
   if (error) return true
@@ -99,7 +107,7 @@ export const fetchWithResilience = async (
       }
 
       const backoff = Math.pow(2, attempt) * 100
-      const jitter = Math.random() * 100
+      const jitter = getSecureJitter(MAX_JITTER_MS)
       await sleep(backoff + jitter)
     } catch (error) {
       clearTimeout(timeout)
@@ -111,7 +119,7 @@ export const fetchWithResilience = async (
       }
 
       const backoff = Math.pow(2, attempt) * 100
-      const jitter = Math.random() * 100
+      const jitter = getSecureJitter(MAX_JITTER_MS)
       await sleep(backoff + jitter)
     }
 
