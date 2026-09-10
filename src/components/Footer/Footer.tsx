@@ -16,13 +16,7 @@ const FOOTER_LINKS = {
 const openExternalLink = (url: string) => window.open(url, '_blank')?.focus();
 
 export const Footer = () => {
-  const initiativeName = (() => {
-    try {
-      return getInitiativeConfig().initiativeName;
-    } catch {
-      return '';
-    }
-  })();
+  const initiativeName = getInitiativeConfig().initiativeName;
   const isDevServer = import.meta.env.DEV;
   const usersPortalOrigin = isDevServer ? 'https://dev.pari.pagopa.it/' : '/';
 

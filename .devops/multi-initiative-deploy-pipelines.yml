@@ -109,7 +109,7 @@ stages:
             artifact: Bundle
 
           - task: AzureCLI@2
-            displayName: 'Sync store listing storage'
+            displayName: 'Sync product catalog storage'
             inputs:
               azureSubscription: '$(azure_subscription)'
               scriptLocation: inlineScript

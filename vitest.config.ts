@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'import.meta.env.VITE_INITIATIVE': JSON.stringify('bonusdecoder'),
+  },
   test: {
     pool: 'threads',
     environment: 'jsdom',

@@ -93,7 +93,7 @@ const ADAPTER_REGISTRY: Record<string, ProductAdapter> = Object.fromEntries(
 );
 
 export const resolveBasePath = (
-  basePath = import.meta.env.VITE_BASE_PATH || import.meta.env.BASE_PATH || '/',
+  basePath = import.meta.env.BASE_URL,
 ): string => {
   if (!basePath.startsWith('/') || !basePath.endsWith('/')) {
     throw new Error(
@@ -104,8 +104,7 @@ export const resolveBasePath = (
   return basePath;
 };
 
-const BASE_PATH = resolveBasePath();
-export const INITIATIVE_NAME = BASE_PATH.replace(/^\//, '').replace(/\/$/, '');
+export const INITIATIVE_NAME = import.meta.env.VITE_INITIATIVE;
 
 export const getInitiativeConfig = (): InitiativeConfig => {
   const config = REGISTRY[INITIATIVE_NAME];
@@ -116,7 +115,7 @@ export const getInitiativeConfig = (): InitiativeConfig => {
     );
   }
 
-  return config;
+  return { ...config, basePath: resolveBasePath() };
 };
 
 export const getInitiativeAdapter = () => {

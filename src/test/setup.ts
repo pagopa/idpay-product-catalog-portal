@@ -1,10 +1,6 @@
 import '@testing-library/jest-dom';
 
-import { afterEach, beforeAll, vi } from 'vitest';
-
-beforeAll(() => {
-  vi.stubEnv('INITIATIVE_NAME', 'bonus_elettrodomestici');
-});
+import { afterEach } from 'vitest';
 import { cleanup } from '@testing-library/react';
 
 afterEach(() => {
