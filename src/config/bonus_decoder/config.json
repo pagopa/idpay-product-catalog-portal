@@ -1,6 +1,7 @@
 {
-  "initiativeName": "elenco-informatico-decoder",
-  "basePath": "/elenco-informatico-decoder/",
+  "initiativeName": "bonusdecoder",
+  "initiativeId": "69e0fa95e21efa516c7b8dec",
+  "basePath": "/elencoprodotti/",
   "filters": [
     { "key": "search", "type": "text" },
     { "key": "category", "type": "select" },
@@ -12,7 +13,7 @@
     { "key": "model", "label": "Modello", "sortable": true },
     { "key": "gtin", "label": "Codice GTIN / EAN", "sortable": true }
   ],
-  "datasetFile": "bonus_decoder_product_export.json",
+  "datasetFile": "product_export_69e0fa95e21efa516c7b8dec.json",
   "detailFields": [
     { "key": "gtin", "label": "Codice GTIN / EAN" },
     { "key": "productCode", "label": "Codice prodotto" },
