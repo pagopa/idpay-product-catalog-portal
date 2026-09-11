@@ -2,6 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import MobileProductCard from './MobileProductCard';
 
+vi.mock('../../config/initiativeResolver', () => ({
+  getInitiativeConfig: () => ({
+    tableColumns: [
+      { key: 'category', label: 'Categoria', sortable: true },
+      { key: 'brand', label: 'Marca', sortable: true },
+      { key: 'model', label: 'Modello', sortable: true },
+      { key: 'gtin', label: 'GTIN', sortable: false },
+      { key: 'eprelCode', label: 'EPREL', sortable: false, link: { type: 'eprel' } },
+    ],
+    copy: {},
+  }),
+}));
+
 vi.mock('@pagopa/mui-italia', async () => {
   const actual = await vi.importActual<typeof import('@pagopa/mui-italia')>('@pagopa/mui-italia');
   return {
@@ -21,8 +34,8 @@ vi.mock('@pagopa/mui-italia', async () => {
   };
 });
 
-vi.mock('../ProductList/ProductList', () => ({
-  baseUrlEprel: 'https://eprel.example.com'
+vi.mock('../../utils/constants', () => ({
+  BASE_URL_EPREL: 'https://eprel.example.com',
 }));
 
 describe('MobileProductCard', () => {

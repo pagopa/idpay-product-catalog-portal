@@ -336,61 +336,63 @@ const ProductsFilters: React.FC<ProductsFiltersProps> = ({
                     </TextField>
                 </Box>
 
-                <Box sx={{ flex: 1, minWidth: "15%", width: { xs: '100%', sm: '100%', md: 'auto' }, }}>
-                    <TextField
-                        select
-                        label="Classe Energetica"
-                        value={selectedClass || ''}
-                        onChange={(e) => setSelectedClass(e.target.value)}
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        sx={dropdownInputSx}
-                        SelectProps={{
-                            MenuProps: {
-                                PaperProps: {
-                                    sx: {
-                                        maxWidth: 300,
+                {classes.length > 0 && (
+                    <Box sx={{ flex: 1, minWidth: "15%", width: { xs: '100%', sm: '100%', md: 'auto' }, }}>
+                        <TextField
+                            select
+                            label="Classe Energetica"
+                            value={selectedClass || ''}
+                            onChange={(e) => setSelectedClass(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            sx={dropdownInputSx}
+                            SelectProps={{
+                                MenuProps: {
+                                    PaperProps: {
+                                        sx: {
+                                            maxWidth: 300,
+                                        },
                                     },
                                 },
-                            },
-                        }}
-                        InputProps={{
-                            endAdornment: selectedClass ? (
-                                <InputAdornment position="end" sx={{ mr: 1 }}>
-                                    <ClearCircleIcon onClick={() => setSelectedClass(null)} />
-                                </InputAdornment>
-                            ) : null,
-                        }}
-                    >
-                        {classes.map((option) => (
-                            <MenuItem
-                                key={option}
-                                value={option}
-                                sx={{
-                                    display: 'block',
-                                    maxWidth: '100%',
-                                    minWidth: 0,
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                <Box
-                                    component="span"
+                            }}
+                            InputProps={{
+                                endAdornment: selectedClass ? (
+                                    <InputAdornment position="end" sx={{ mr: 1 }}>
+                                        <ClearCircleIcon onClick={() => setSelectedClass(null)} />
+                                    </InputAdornment>
+                                ) : null,
+                            }}
+                        >
+                            {classes.map((option) => (
+                                <MenuItem
+                                    key={option}
+                                    value={option}
                                     sx={{
                                         display: 'block',
+                                        maxWidth: '100%',
+                                        minWidth: 0,
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
                                     }}
                                 >
-                                    {option}
-                                </Box>
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </Box>
+                                    <Box
+                                        component="span"
+                                        sx={{
+                                            display: 'block',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {option}
+                                    </Box>
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Box>
+                )}
             </Box>
         )
     }
@@ -616,51 +618,53 @@ const ProductsFilters: React.FC<ProductsFiltersProps> = ({
                         ))}
                     </TextField>
 
-                    <TextField
-                        select
-                        label="Classe Energetica"
-                        value={selectedClass || ''}
-                        onChange={(e) => setSelectedClass(e.target.value)}
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        sx={dropdownInputSx}
-                        SelectProps={{
-                            MenuProps: {
-                                PaperProps: {
-                                    sx: { maxWidth: '80%', justifyContent: "center", alignItems: "center" },
+                    {classes.length > 0 && (
+                        <TextField
+                            select
+                            label="Classe Energetica"
+                            value={selectedClass || ''}
+                            onChange={(e) => setSelectedClass(e.target.value)}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            sx={dropdownInputSx}
+                            SelectProps={{
+                                MenuProps: {
+                                    PaperProps: {
+                                        sx: { maxWidth: '80%', justifyContent: "center", alignItems: "center" },
+                                    },
                                 },
-                            },
-                        }}
-                    >
-                        {classes.map((option) => (
-                            <MenuItem
-                                key={option}
-                                value={option}
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: "center",
-                                    maxWidth: '100%',
-                                    minWidth: 0,
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                <Box
-                                    component="span"
+                            }}
+                        >
+                            {classes.map((option) => (
+                                <MenuItem
+                                    key={option}
+                                    value={option}
                                     sx={{
-                                        display: 'block',
+                                        display: 'flex',
+                                        alignItems: "center",
+                                        maxWidth: '100%',
+                                        minWidth: 0,
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
                                     }}
                                 >
-                                    {option}
-                                </Box>
-                            </MenuItem>
-                        ))}
-                    </TextField>
+                                    <Box
+                                        component="span"
+                                        sx={{
+                                            display: 'block',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {option}
+                                    </Box>
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    )}
 
                     <Button
                         variant="contained"

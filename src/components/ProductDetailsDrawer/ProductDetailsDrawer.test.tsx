@@ -2,6 +2,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ProductDetailsDrawer } from './ProductDetailsDrawer';
 
+vi.mock('../../config/initiativeResolver', () => ({
+  getInitiativeConfig: () => ({
+    detailFields: [
+      { key: 'model', label: 'Modello' },
+      { key: 'countryOfProduction', label: 'Paese di produzione', formatter: 'country' },
+      { key: 'capacity', label: 'Capacità' },
+      { key: 'productCode', label: 'Codice prodotto' },
+    ],
+    copy: {},
+  }),
+}));
+
 vi.mock('@mui/material', async () => {
   const actual = await vi.importActual<typeof import('@mui/material')>('@mui/material');
   return {
@@ -142,7 +154,8 @@ describe('ProductDetailsDrawer', () => {
 
     expect(screen.getByText('FallbackModel')).toBeInTheDocument();
     expect(screen.getByText('US')).toBeInTheDocument();
-    expect(screen.getAllByText('-')).toHaveLength(4);
+
+    expect(screen.getAllByText('-')).toHaveLength(3);
   });
 
   it('honors forceMode drawer on mobile', () => {

@@ -4,16 +4,25 @@ import { BonusPariInfo } from './BonusPARIInfo';
 
 vi.mock('../../assets/PARI.png', () => ({ default: 'pari.png' }));
 
+vi.mock('../../config/initiativeResolver', () => ({
+  getInitiativeConfig: () => ({
+    copy: {
+      realizationPrefix: 'Il Bonus Elettrodomestici è realizzato tramite',
+    },
+  }),
+}));
+
 vi.mock('@pagopa/mui-italia', async () => {
-  const actual = await vi.importActual<typeof import('@pagopa/mui-italia')>('@pagopa/mui-italia');
+  const actual =
+    await vi.importActual<typeof import('@pagopa/mui-italia')>('@pagopa/mui-italia');
   return {
     ...actual,
     theme: {
       palette: {
         primary: { contrastText: '#fff' },
-        divider: '#ccc'
-      }
-    }
+        divider: '#ccc',
+      },
+    },
   };
 });
 
@@ -38,6 +47,7 @@ describe('BonusPariInfo', () => {
       'https://developer.pagopa.it/pari/overview'
     );
     expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener');
   });
 
   it('renders descriptive paragraph', () => {

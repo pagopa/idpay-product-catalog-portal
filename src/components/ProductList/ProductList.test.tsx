@@ -2,6 +2,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ProductList from './ProductList';
 
+vi.mock('../../config/initiativeResolver', () => ({
+  getInitiativeConfig: () => ({
+    tableColumns: [
+      { key: 'category', label: 'Categoria', sortable: true },
+      { key: 'brand', label: 'Marca', sortable: true },
+      { key: 'eprelCode', label: 'EPREL', sortable: false, link: { type: 'eprel' } },
+    ],
+    copy: {},
+  }),
+}));
+
 vi.mock('../../hooks/useIsMobile', () => ({
   useIsMobile: vi.fn()
 }));
@@ -110,8 +121,8 @@ describe('ProductList', () => {
 
     render(<ProductList data={mockData} />);
 
-    expect(screen.getByText('ModelA')).toBeInTheDocument();
-    expect(screen.getByText('ModelB')).toBeInTheDocument();
+    expect(screen.getByText('BrandA')).toBeInTheDocument();
+    expect(screen.getByText('BrandB')).toBeInTheDocument();
   });
 
   it('renders desktop table when isMobile is false', () => {
@@ -128,8 +139,8 @@ describe('ProductList', () => {
 
     render(<ProductList data={mockData} />);
 
-    const detailsButton = screen.getAllByRole('button').find((button) => button.textContent === '');
-    fireEvent.click(detailsButton!);
+    const actionButtons = screen.getAllByTestId('ArrowForwardIosIcon');
+    fireEvent.click(actionButtons[1]);
 
     expect(screen.getByTestId('drawer-open')).toBeInTheDocument();
     expect(screen.getByText('open')).toBeInTheDocument();
@@ -154,7 +165,8 @@ describe('ProductList', () => {
 
     fireEvent.click(screen.getByText('search-model'));
     expect(screen.getByTestId('filtered-count')).toHaveTextContent('1');
-    expect(screen.getByText('ModelA')).toBeInTheDocument();
+
+    expect(screen.getByText('BrandA')).toBeInTheDocument();
 
     fireEvent.click(screen.getByText('filter-category'));
     fireEvent.click(screen.getByText('filter-class'));
@@ -179,8 +191,8 @@ describe('ProductList', () => {
       '_blank'
     );
 
-    const detailsButton = screen.getAllByRole('button').find((button) => button.textContent === '');
-    fireEvent.click(detailsButton!);
+    const actionButtons = screen.getAllByTestId('ArrowForwardIosIcon');
+    fireEvent.click(actionButtons[0]);
     expect(screen.getByText('open')).toBeInTheDocument();
     fireEvent.click(screen.getByText('close-drawer'));
     expect(screen.getByText('closed')).toBeInTheDocument();

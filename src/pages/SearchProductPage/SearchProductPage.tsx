@@ -3,40 +3,49 @@ import { Box, Typography } from "@mui/material";
 import ProductsList from "../../components/ProductList/ProductList";
 import { theme } from "@pagopa/mui-italia";
 import ProductsListSkeleton from "../../components/ProductsListSkeleton/ProductsListSkeleton";
+import { getEligibleProducts } from "../../services/products/productsRepository";
+import type { UiProduct } from '../../services/products/types'
+import { getInitiativeConfig } from "../../config/initiativeResolver";
+import { logger } from "../../services/logging/logger";
 
 const SearchProductPage = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<UiProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const initiativeConfig = getInitiativeConfig();
 
   useEffect(() => {
-    const doFetch = async () => {
-      await fetch(`${import.meta.env.BASE_URL}data/product_export.json`)
-        .then((res) => {
-          if (!res.ok) throw new Error("Errore nel caricamento del file JSON");
-          return res.json();
-        })
-        .then((data) => setProducts(data))
-        .catch((err) => console.log(err.message))
-        .finally(() => setIsLoading(false));
-    }
-    doFetch();
+    const loadProducts = async () => {
+      try {
+        const data = await getEligibleProducts();
+        setProducts(data);
+      } catch (error) {
+        logger.error(
+          error instanceof Error
+            ? error.message
+            : "Unexpected error while loading products"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProducts();
   }, []);
 
   return (
     <>
       <Box textAlign="center" py={6} px={2} bgcolor={theme.palette.primary.contrastText}>
         <Typography variant="h1" fontWeight="700" gutterBottom>
-          Cerca un prodotto
+          {initiativeConfig.copy.searchPage.title}
         </Typography>
 
-        <Typography variant="h6" fontWeight="400">
-          Consulta la lista per verificare se il prodotto che vuoi acquistare
-        </Typography>
-        <Typography variant="h6" fontWeight="400">
-          usando il Bonus Elettrodomestici è presente nell'elenco.
-        </Typography>
-        <Typography variant="h6" fontWeight="400" gutterBottom>
-          La lista è in aggiornamento.
+        <Typography
+          variant="h6"
+          fontWeight="400"
+          gutterBottom
+          sx={{ whiteSpace: "pre-line" }}
+        >
+          {initiativeConfig.copy.searchPage.description}
         </Typography>
       </Box>
 

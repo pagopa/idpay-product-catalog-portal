@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'import.meta.env.VITE_INITIATIVE': JSON.stringify('bonusdecoder'),
+  },
   test: {
     pool: 'threads',
     environment: 'jsdom',
@@ -16,7 +19,9 @@ export default defineConfig({
       exclude: [
         'src/main.tsx',
         'src/vite-env.d.ts',
-        '**/*.d.ts'
+        '**/*.d.ts',
+        'src/config/**/adapter.ts',
+        'src/utils/constants.ts'
       ],
       thresholds: {
         lines: 90,

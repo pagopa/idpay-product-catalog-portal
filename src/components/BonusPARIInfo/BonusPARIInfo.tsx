@@ -1,9 +1,12 @@
 import { Box, Typography } from '@mui/material';
 import { theme } from '@pagopa/mui-italia';
 import pariLogo from '../../assets/PARI.png';
+import {getInitiativeConfig} from "../../config/initiativeResolver.ts";
 
 export const BonusPariInfo = () => {
-    return (
+  const initiativeConfig = getInitiativeConfig();
+
+  return (
         <Box
             display={'flex'}
             flexDirection={'column'}
@@ -30,7 +33,7 @@ export const BonusPariInfo = () => {
                     flexWrap: 'wrap',
                 }}
             >
-                Il Bonus Elettrodomestici è realizzato tramite{' '}
+              {initiativeConfig.copy.realizationPrefix}{' '}
                 <Box
                     component="img"
                     src={pariLogo}
