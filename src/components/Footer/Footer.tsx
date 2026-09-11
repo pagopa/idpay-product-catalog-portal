@@ -6,10 +6,10 @@ import { getInitiativeConfig } from '../../config/initiativeResolver';
 
 const FOOTER_LINKS = {
   COMPANY: 'https://www.pagopa.it/it/',
-  PRIVACY: '/utente/privacy-policy',
+  PRIVACY: 'utente/privacy-policy',
   PERSONAL_DATA:
     'https://privacyportal-de.onetrust.com/webform/77f17844-04c3-4969-a11d-462ee77acbe1/9ab6533d-be4a-482e-929a-0d8d2ab29df8',
-  TERMS_AND_CONDITIONS: '/utente/terms-of-service',
+  TERMS_AND_CONDITIONS: 'utente/terms-of-service',
   A11Y: 'https://form.agid.gov.it/view/9b5c6ed0-bbbb-11f0-a7e5-9bac06d781c9',
 } as const;
 
@@ -17,8 +17,13 @@ const openExternalLink = (url: string) => window.open(url, '_blank')?.focus();
 
 export const Footer = () => {
   const initiativeName = getInitiativeConfig().initiativeName;
-  const isDevServer = import.meta.env.DEV;
-  const usersPortalOrigin = isDevServer ? 'https://dev.pari.pagopa.it/' : '/';
+
+  const privacyLink = `${window.location.origin}/${initiativeName
+    .toLowerCase()
+    .replace(' ', '')}/${FOOTER_LINKS.PRIVACY}`;
+  const tosLink = `${window.location.origin}/${initiativeName
+    .toLowerCase()
+    .replace(' ', '')}/${FOOTER_LINKS.TERMS_AND_CONDITIONS}`;
 
   return (
     <>
@@ -35,12 +40,9 @@ export const Footer = () => {
           {
             label: 'Informativa Privacy',
             ariaLabel: 'Informativa Privacy',
-            href: usersPortalOrigin + initiativeName + FOOTER_LINKS.PRIVACY,
+            href: privacyLink,
             linkType: 'external',
-            onClick: () =>
-              openExternalLink(
-                usersPortalOrigin + initiativeName + FOOTER_LINKS.PRIVACY,
-              ),
+            onClick: () => openExternalLink(privacyLink),
           },
           {
             label: 'Diritto alla protezione dei dati personali',
@@ -52,17 +54,9 @@ export const Footer = () => {
           {
             label: "Termini e condizioni d'uso",
             ariaLabel: "Termini e condizioni d'uso",
-            href:
-              usersPortalOrigin +
-              initiativeName +
-              FOOTER_LINKS.TERMS_AND_CONDITIONS,
+            href: tosLink,
             linkType: 'external',
-            onClick: () =>
-              openExternalLink(
-                usersPortalOrigin +
-                  initiativeName +
-                  FOOTER_LINKS.TERMS_AND_CONDITIONS,
-              ),
+            onClick: () => openExternalLink(tosLink),
           },
           {
             label: 'Accessibilità',

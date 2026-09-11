@@ -1,7 +1,7 @@
 {
   "initiativeName": "bonusdecoder",
   "initiativeId": "69e0fa95e21efa516c7b8dec",
-  "basePath": "/elencoprodotti/",
+  "basePath": "/elenco-prodotti/",
   "filters": [
     { "key": "search", "type": "text" },
     { "key": "category", "type": "select" },
