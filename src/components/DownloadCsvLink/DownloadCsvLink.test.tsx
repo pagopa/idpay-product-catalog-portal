@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DownloadCsvLink from './DownloadCsvLink';
+import { getInitiativeConfig } from '../../config/initiativeResolver';
 
 describe('DownloadCsvLink', () => {
+  const initiativeConfig = getInitiativeConfig();
   const originalFetch = global.fetch;
   const originalCreateObjectURL = window.URL.createObjectURL;
   const originalRevokeObjectURL = window.URL.revokeObjectURL;
@@ -22,12 +24,13 @@ describe('DownloadCsvLink', () => {
   it('renders the download button', () => {
     render(<DownloadCsvLink />);
     expect(
-      screen.getByText('Scarica la lista in formato csv')
+      screen.getByText('Scarica la lista in formato csv'),
     ).toBeInTheDocument();
   });
 
   it('downloads csv on first successful fetch', async () => {
     const blob = new Blob(['test'], { type: 'text/csv' });
+    const dateStr = new Date().toISOString().split('T')[0];
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       blob: vi.fn().mockResolvedValue(blob),
@@ -41,12 +44,13 @@ describe('DownloadCsvLink', () => {
 
     render(<DownloadCsvLink />);
 
-    fireEvent.click(
-      screen.getByText('Scarica la lista in formato csv')
-    );
+    fireEvent.click(screen.getByText('Scarica la lista in formato csv'));
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledWith(
+        `/data/export_daily_${initiativeConfig.initiativeId}_${dateStr}.csv`,
+      );
       expect(createObjectURLMock).toHaveBeenCalledWith(blob);
       expect(revokeObjectURLMock).toHaveBeenCalledWith('blob:url');
     });
@@ -54,6 +58,11 @@ describe('DownloadCsvLink', () => {
 
   it('falls back to yesterday if today file is not ok', async () => {
     const blob = new Blob(['test'], { type: 'text/csv' });
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
 
     const fetchMock = vi
       .fn()
@@ -70,12 +79,18 @@ describe('DownloadCsvLink', () => {
 
     render(<DownloadCsvLink />);
 
-    fireEvent.click(
-      screen.getByText('Scarica la lista in formato csv')
-    );
+    fireEvent.click(screen.getByText('Scarica la lista in formato csv'));
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        1,
+        `/data/export_daily_${initiativeConfig.initiativeId}_${todayStr}.csv`,
+      );
+      expect(fetchMock).toHaveBeenNthCalledWith(
+        2,
+        `/data/export_daily_${yesterdayStr}.csv`,
+      );
     });
   });
 
@@ -92,9 +107,7 @@ describe('DownloadCsvLink', () => {
 
     render(<DownloadCsvLink />);
 
-    fireEvent.click(
-      screen.getByText('Scarica la lista in formato csv')
-    );
+    fireEvent.click(screen.getByText('Scarica la lista in formato csv'));
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(2);
@@ -103,16 +116,16 @@ describe('DownloadCsvLink', () => {
   });
 
   it('logs a generic error when fetch rejects with a non-error value', async () => {
-    global.fetch = vi.fn().mockRejectedValue('network down') as unknown as typeof fetch;
+    global.fetch = vi
+      .fn()
+      .mockRejectedValue('network down') as unknown as typeof fetch;
 
     const consoleErrorMock = vi.fn();
     console.error = consoleErrorMock;
 
     render(<DownloadCsvLink />);
 
-    fireEvent.click(
-      screen.getByText('Scarica la lista in formato csv')
-    );
+    fireEvent.click(screen.getByText('Scarica la lista in formato csv'));
 
     await waitFor(() => {
       expect(consoleErrorMock).toHaveBeenCalledWith('Download Error');
