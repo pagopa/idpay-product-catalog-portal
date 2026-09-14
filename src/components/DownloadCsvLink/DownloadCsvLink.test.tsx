@@ -89,7 +89,7 @@ describe('DownloadCsvLink', () => {
       );
       expect(fetchMock).toHaveBeenNthCalledWith(
         2,
-        `/data/export_daily_${yesterdayStr}.csv`,
+        `/data/export_daily_${initiativeConfig.initiativeId}_${yesterdayStr}.csv`,
       );
     });
   });

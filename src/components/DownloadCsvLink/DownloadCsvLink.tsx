@@ -25,8 +25,10 @@ const DownloadCsvLink = () => {
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
         dateStr = yesterday.toISOString().split('T')[0];
-        url = `${import.meta.env.BASE_URL}data/export_daily_${dateStr}.csv`;
-
+        url = `${import.meta.env.BASE_URL}data/export_daily_${
+          config.initiativeId
+        }_${dateStr}.csv`;
+      
         res = await fetch(url);
 
         if (!res.ok) {
