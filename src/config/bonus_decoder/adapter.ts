@@ -8,6 +8,14 @@ export const adapter: ProductAdapter = (raw: ProductRaw): UiProduct | null => {
     typeof raw.gtinCode !== 'string'
   ) return null
 
+  const categoryLabel: Record<string, string> = {
+    DS: 'Satellitare',
+    DT: 'Terrestre',
+    DTC: 'Terrestre via cavo',
+    DTS: 'Terrestre e Satellitare',
+    DTSC: 'Terrestre, Satellitare e via cavo',
+  }
+
   return {
     productName:
       typeof raw.productName === 'string'
@@ -19,7 +27,7 @@ export const adapter: ProductAdapter = (raw: ProductRaw): UiProduct | null => {
         : undefined,
     brand: raw.brand,
     model: raw.model,
-    category: raw.category,
+    category: categoryLabel[raw.category as string] ?? raw.category,
     gtin: raw.gtinCode
   }
 }
