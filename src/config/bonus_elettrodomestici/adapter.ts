@@ -45,7 +45,7 @@ export const adapter: ProductAdapter = (raw: ProductRaw): UiProduct | null => {
         ? raw.energyClass
         : undefined,
     eprelCode:
-      typeof raw.eprelCode === 'string'
+      typeof raw.eprelCode === 'number'
         ? raw.eprelCode
         : undefined,
     productGroup:
