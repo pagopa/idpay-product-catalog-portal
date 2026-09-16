@@ -115,7 +115,7 @@ stages:
               scriptLocation: inlineScript
               scriptType: bash
               inlineScript: |
-                az storage blob sync --container '$(blob_container_name)' --account-name $(storage_account) -s "$(Pipeline.Workspace)/Bundle" --destination '${{ parameters.INITIATIVE }}/$(basePath)/'
+                az storage blob sync --container '$(blob_container_name)' --account-name $(storage_account) -s "$(Pipeline.Workspace)/Bundle" --destination '${{ parameters.INITIATIVE }}/$(basePath)/' --exclude-path 'data'
           - task: AzureCLI@2
             displayName: 'Purge Azure Front Door CDN endpoint'
             inputs:
@@ -127,4 +127,4 @@ stages:
                 --profile-name $(cdn_profile) \
                 --endpoint-name $(cdn_endpoint) \
                 --domains $(cdn_domains) \
-                --content-paths "/${{ parameters.INITIATIVE }}/$(basePath)" "/${{ parameters.INITIATIVE }}/$(basePath)/*" "!/${{ parameters.INITIATIVE }}/$(basePath)/public/data/*"
+                --content-paths "/${{ parameters.INITIATIVE }}/$(basePath)" "/${{ parameters.INITIATIVE }}/$(basePath)/*"
