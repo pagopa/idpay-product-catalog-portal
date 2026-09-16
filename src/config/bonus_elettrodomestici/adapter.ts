@@ -4,7 +4,7 @@ export const adapter: ProductAdapter = (raw: ProductRaw): UiProduct | null => {
   if (
     typeof raw.brand !== 'string' ||
     typeof raw.model !== 'string' ||
-    typeof raw.gtin !== 'string' ||
+    typeof raw.gtinCode !== 'string' ||
     typeof raw.category !== 'string'
   ) return null
 
@@ -26,7 +26,7 @@ export const adapter: ProductAdapter = (raw: ProductRaw): UiProduct | null => {
         : `${raw.brand} ${raw.model}`,
     brand: raw.brand,
     model: raw.model,
-    gtin: raw.gtin,
+    gtin: raw.gtinCode,
     productCode:
       typeof raw.productCode === 'string'
         ? raw.productCode
@@ -45,8 +45,8 @@ export const adapter: ProductAdapter = (raw: ProductRaw): UiProduct | null => {
         ? raw.energyClass
         : undefined,
     eprelCode:
-      typeof raw.eprelCode === 'string'
-        ? raw.eprelCode
+      typeof raw.eprelCode === 'number'
+        ? String(raw.eprelCode)
         : undefined,
     productGroup:
       typeof raw.productGroup === 'string'
