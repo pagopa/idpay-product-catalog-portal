@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ProductDetailsDrawer } from './ProductDetailsDrawer';
 
 vi.mock('../../config/initiativeResolver', () => ({
@@ -83,6 +84,28 @@ describe('ProductDetailsDrawer', () => {
     expect(screen.getByText('SCHEDA PRODOTTO')).toBeInTheDocument();
     expect(screen.getByText('ModelX')).toBeInTheDocument();
     expect(screen.getByText('Italia')).toBeInTheDocument();
+  });
+
+  it('shows the full text tooltip on hover for long values', async () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(false);
+    const user = userEvent.setup();
+    const longValue = 'abcdefghil1234567890123456789012345678901234567890abcdefghil1234567890123456789012345678901234567890';
+
+    render(
+      <ProductDetailsDrawer
+        open
+        onClose={vi.fn()}
+        product={{
+          ...mockProduct,
+          productName: longValue,
+          model: longValue,
+        }}
+      />
+    );
+
+    await user.hover(screen.getAllByText(longValue)[0])
+
+    expect(await screen.findByRole('tooltip')).toHaveTextContent(longValue)
   });
 
   it('calls onClose when close button clicked', () => {

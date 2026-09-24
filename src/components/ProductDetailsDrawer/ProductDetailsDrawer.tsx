@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  Box, Typography, IconButton, Drawer, SwipeableDrawer,
+  Box, Typography, IconButton, Drawer, SwipeableDrawer, Tooltip, Divider,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { theme } from '@pagopa/mui-italia'
@@ -53,19 +53,74 @@ const countryLabel: Record<string, string> = {
   UK: 'Regno Unito',
 }
 
+const truncatedTextSx = {
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  display: 'block',
+  minWidth: 0,
+}
+
+const multilineTruncatedTextSx = {
+  overflow: 'hidden',
+  display: '-webkit-box',
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: 2,
+  whiteSpace: 'normal',
+  minWidth: 0,
+}
+
+const TruncatedTooltipText = ({
+  text,
+  variant,
+  fontWeight,
+  color,
+  mt,
+  fontStyle,
+  multiline = false,
+}: {
+  text?: string
+  variant: React.ComponentProps<typeof Typography>['variant']
+  fontWeight?: React.ComponentProps<typeof Typography>['fontWeight']
+  color?: React.ComponentProps<typeof Typography>['color']
+  mt?: React.ComponentProps<typeof Typography>['mt']
+  fontStyle?: React.ComponentProps<typeof Typography>['fontStyle']
+  multiline?: boolean
+}) => {
+  const displayText = text?.trim() || '-'
+
+  return (
+    <Tooltip
+      title={displayText === '-' ? '' : displayText}
+      placement="bottom-start"
+      disableHoverListener={displayText === '-'}
+    >
+      <Typography
+        variant={variant}
+        fontWeight={fontWeight}
+        color={color}
+        mt={mt}
+        fontStyle={fontStyle}
+        noWrap={!multiline}
+        sx={multiline ? multilineTruncatedTextSx : truncatedTextSx}
+      >
+        {displayText}
+      </Typography>
+    </Tooltip>
+  )
+}
+
 const FieldRow = ({ label, value }: { label: string; value?: string }) => (
   <Box mb={2}>
     <Typography variant="body2" fontWeight={400} sx={{ color: theme.palette.action.active, display: 'block' }}>
       {label}
     </Typography>
-    <Typography variant="body2" fontWeight={600} fontStyle={'semibold'}>
-      {value || '-'}
-    </Typography>
+    <TruncatedTooltipText variant="body2" fontWeight={600} fontStyle="semibold" text={value} />
   </Box>
 )
 
 export const ProductDetailsDrawer: React.FC<Props> = ({
-  open, onClose, onOpen, product, width = 420, mobileHeight = '75%', forceMode,
+  open, onClose, onOpen, product, width = 380, mobileHeight = '75%', forceMode,
 }) => {
   const isMobile = useIsMobile()
   const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
@@ -84,11 +139,11 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
         <CloseIcon />
       </IconButton>
 
-      <Typography variant="h6" fontWeight={700} mt={5}>
-        {headerTitle}
-      </Typography>
+      <TruncatedTooltipText variant="h6" fontWeight={600} mt={5} text={headerTitle} multiline />
 
-      <Typography variant="overline" mt={4} color={theme.palette.text.primary} display={'block'}>
+      <Divider sx={{ mt: 2.5, mb: 1.5, borderColor: theme.palette.divider }} />
+
+      <Typography variant="overline" mt={2} color={theme.palette.text.primary} display={'block'}>
         SCHEDA PRODOTTO
       </Typography>
     </Box>
