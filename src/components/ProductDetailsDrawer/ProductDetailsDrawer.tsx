@@ -7,6 +7,7 @@ import { theme } from '@pagopa/mui-italia'
 import { useIsMobile } from '../../hooks/useIsMobile'
 import type { Product } from '../ProductList/ProductList'
 import { getInitiativeConfig } from '../../config/initiativeResolver'
+import {normalizeValue} from "../../utils/functions.ts";
 
 type Props = {
   open: boolean
@@ -152,16 +153,17 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
   const initiativeConfig = getInitiativeConfig()
 
   const formatValue = (
-    value: string | undefined,
+    value: string | null | undefined,
     formatter?: 'country'
   ): string | undefined => {
-    if (!value) return value
+    const normalizedValue = normalizeValue(value)
+    if (!normalizedValue) return normalizedValue
 
     if (formatter === 'country') {
-      return countryLabel[value] ?? value
+      return countryLabel[normalizedValue] ?? normalizedValue
     }
 
-    return value
+    return normalizedValue
   }
 
   const Content = product ? (
@@ -169,6 +171,7 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
       {initiativeConfig.detailFields.map((field) => {
         const rawValue = product[field.key as keyof Product] as
           | string
+          | null
           | undefined
 
         return (

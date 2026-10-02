@@ -35,3 +35,14 @@ export const structuralValidation = <T extends Record<string, unknown>>(data: un
 
   return data.filter((item) => typeof item === 'object' && item !== null) as T[]
 }
+
+export const normalizeValue = (value: string | null | undefined): string | undefined => {
+  if (value == null) return undefined
+
+  const trimmedValue = value.trim()
+  if (!trimmedValue || /^N(?:\\A|\/A)$/i.test(trimmedValue)) {
+    return undefined
+  }
+
+  return trimmedValue
+}

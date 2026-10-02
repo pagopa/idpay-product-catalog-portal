@@ -22,6 +22,7 @@ import { ProductDetailsDrawer } from '../ProductDetailsDrawer/ProductDetailsDraw
 import DownloadCsvLink from '../DownloadCsvLink/DownloadCsvLink'
 import { getInitiativeConfig } from '../../config/initiativeResolver'
 import { BASE_URL_EPREL } from '../../utils/constants'
+import { normalizeValue } from '../../utils/functions'
 
 export interface Product {
   [key: string]: string | undefined
@@ -259,12 +260,15 @@ const ProductsList = ({ data: rawData }: { data: Product[] }) => {
                       }}
                     >
                       {initiativeConfig.tableColumns.map((col) => {
-                        const cellValue = row[col.key]
+                        const rawCellValue = row[col.key] as string | null | undefined
+                        const cellValue = normalizeValue(rawCellValue)
                         const isEprelLink = col.link?.type === 'eprel'
+                        const eprelCode = normalizeValue(row.eprelCode as string | null | undefined)
+                        const productGroup = normalizeValue(row.productGroup as string | null | undefined)
                         const canOpen =
                           isEprelLink &&
-                          row.eprelCode &&
-                          row.productGroup
+                          !!eprelCode &&
+                          !!productGroup
 
                         return (
                           <TableCell
@@ -295,9 +299,9 @@ const ProductsList = ({ data: rawData }: { data: Product[] }) => {
                                   display: 'block',
                                 }}
                                 onClick={() => {
-                                  if (canOpen) {
+                                  if (canOpen && eprelCode && productGroup) {
                                     window.open(
-                                      `${BASE_URL_EPREL}/${row.productGroup}/${row.eprelCode}`,
+                                      `${BASE_URL_EPREL}/${productGroup}/${eprelCode}`,
                                       '_blank'
                                     )
                                   }

@@ -134,6 +134,25 @@ describe('ProductList', () => {
     expect(screen.getByText('Marca')).toBeInTheDocument();
   });
 
+  it('renders dash in table for null and N/A-like values', () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(false);
+
+    render(
+      <ProductList
+        data={[
+          {
+            ...mockData[0],
+            category: 'N/A',
+            brand: null as unknown as string,
+            eprelCode: 'N\\A',
+          },
+        ]}
+      />
+    );
+
+    expect(screen.getAllByText('-')).toHaveLength(3);
+  });
+
   it('opens drawer when row action clicked (desktop)', () => {
     (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(false);
 
