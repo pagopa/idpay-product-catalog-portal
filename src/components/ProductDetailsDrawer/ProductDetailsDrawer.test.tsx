@@ -181,6 +181,26 @@ describe('ProductDetailsDrawer', () => {
     expect(screen.getAllByText('-')).toHaveLength(3);
   });
 
+  it('renders dash for null and N/A-like values', () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(false);
+
+    render(
+      <ProductDetailsDrawer
+        open
+        onClose={vi.fn()}
+        product={{
+          ...mockProduct,
+          capacity: null as unknown as string,
+          productCode: 'N\\A',
+          countryOfProduction: 'N/A'
+        }}
+      />
+    );
+
+    expect(screen.getByText('ModelX')).toBeInTheDocument();
+    expect(screen.getAllByText('-')).toHaveLength(3);
+  });
+
   it('honors forceMode drawer on mobile', () => {
     (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
