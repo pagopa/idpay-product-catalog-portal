@@ -1,0 +1,45 @@
+{
+  "initiativeName": "bonuselettrodomestici",
+  "initiativeId": "68dd003ccce8c534d1da22bc",
+  "basePath": "/elenco-prodotti/",
+  "filters": [
+    { "key": "search", "type": "text" },
+    { "key": "category", "type": "select" },
+    { "key": "brand", "type": "select" },
+    { "key": "energyClass", "type": "select" }
+  ],
+  "tableColumns": [
+    { "key": "category", "label": "Categoria", "sortable": true },
+    { "key": "brand", "label": "Marca", "sortable": true },
+    { "key": "model", "label": "Modello", "sortable": true },
+    { "key": "gtin", "label": "Codice GTIN / EAN", "sortable": true },
+    {
+      "key": "eprelCode",
+      "label": "Codice EPREL",
+      "sortable": true,
+      "link": { "type": "eprel" }
+    }
+  ],
+  "datasetFile": "product_export_68dd003ccce8c534d1da22bc.json",
+  "detailFields": [
+    { "key": "gtin", "label": "Codice GTIN/EAN" },
+    { "key": "productCode", "label": "Codice Prodotto" },
+    { "key": "category", "label": "Categoria" },
+    { "key": "brand", "label": "Marca" },
+    { "key": "model", "label": "Modello" },
+    { "key": "capacity", "label": "Capacità" },
+    { "key": "energyClass", "label": "Classe energetica" },
+    {
+      "key": "countryOfProduction",
+      "label": "Paese di produzione",
+      "formatter": "country"
+    }
+  ],
+  "copy": {
+    "searchPage": {
+      "title": "Cerca un prodotto",
+      "description": "Consulta la lista per verificare se il prodotto che vuoi acquistare\nusando il Bonus Elettrodomestici è presente nell'elenco.\nLa lista è in aggiornamento."
+    },
+    "realizationPrefix": "Il Bonus Elettrodomestici è realizzato tramite"
+  }
+}
