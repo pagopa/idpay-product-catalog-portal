@@ -19,7 +19,10 @@
     { "key": "productCode", "label": "Codice prodotto" },
     { "key": "category", "label": "Categoria" },
     { "key": "brand", "label": "Marca" },
-    { "key": "model", "label": "Modello" }
+    { "key": "model", "label": "Modello" },
+    { "key": "scart", "label": "Presa SCART" },
+    { "key": "connectivity", "label": "Connessione IP" },
+    { "key": "technicalSheetUrl", "label": "Scheda tecnica" }
   ],
   "copy": {
     "searchPage": {

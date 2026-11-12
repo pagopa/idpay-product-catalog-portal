@@ -28,6 +28,16 @@ export const adapter: ProductAdapter = (raw: ProductRaw): UiProduct | null => {
     brand: raw.brand,
     model: raw.model,
     category: categoryLabel[raw.category as string] ?? raw.category,
-    gtin: raw.gtinCode
+    gtin: raw.gtinCode,
+    scart:
+      typeof raw.scart === 'boolean'
+        ? raw.scart ? 'Sì' : 'No'
+        : undefined,
+    connectivity:
+      typeof raw.connectivity === 'string' ? raw.connectivity : undefined,
+    technicalSheetUrl:
+      typeof raw.technicalSheetUrl === 'string'
+        ? raw.technicalSheetUrl
+        : undefined,
   }
 }
