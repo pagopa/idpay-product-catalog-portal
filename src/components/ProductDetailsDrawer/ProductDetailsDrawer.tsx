@@ -79,6 +79,7 @@ const TruncatedTooltipText = ({
   mt,
   fontStyle,
   multiline = false,
+  href,
 }: {
   text?: string
   variant: React.ComponentProps<typeof Typography>['variant']
@@ -87,8 +88,18 @@ const TruncatedTooltipText = ({
   mt?: React.ComponentProps<typeof Typography>['mt']
   fontStyle?: React.ComponentProps<typeof Typography>['fontStyle']
   multiline?: boolean
+  href?: string
 }) => {
   const displayText = text?.trim() || '-'
+  const typographyProps = {
+    variant,
+    fontWeight,
+    color,
+    mt,
+    fontStyle,
+    noWrap: !multiline,
+    sx: multiline ? multilineTruncatedTextSx : truncatedTextSx,
+  }
 
   return (
     <Tooltip
@@ -96,27 +107,55 @@ const TruncatedTooltipText = ({
       placement="bottom-start"
       disableHoverListener={displayText === '-'}
     >
-      <Typography
-        variant={variant}
-        fontWeight={fontWeight}
-        color={color}
-        mt={mt}
-        fontStyle={fontStyle}
-        noWrap={!multiline}
-        sx={multiline ? multilineTruncatedTextSx : truncatedTextSx}
-      >
-        {displayText}
-      </Typography>
+      {href ? (
+        <Typography
+          component="a"
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          {...typographyProps}
+          sx={{ ...typographyProps.sx, color: '#0B3EE3' }}
+        >
+          {displayText}
+        </Typography>
+      ) : (
+        <Typography {...typographyProps}>{displayText}</Typography>
+      )}
     </Tooltip>
   )
 }
 
-const FieldRow = ({ label, value }: { label: string; value?: string }) => (
+const getExternalHref = (value?: string): string | undefined => {
+  if (!value || value === 'Nessuna') return undefined
+
+  try {
+    const url = new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`)
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : undefined
+  } catch {
+    return undefined
+  }
+}
+
+const FieldRow = ({
+  label,
+  value,
+  isLink = false,
+}: {
+  label: string
+  value?: string
+  isLink?: boolean
+}) => (
   <Box mb={2}>
     <Typography variant="body2" fontWeight={400} sx={{ color: theme.palette.action.active, display: 'block' }}>
       {label}
     </Typography>
-    <TruncatedTooltipText variant="body2" fontWeight={600} fontStyle="semibold" text={value} />
+    <TruncatedTooltipText
+      variant="body2"
+      fontWeight={600}
+      fontStyle="semibold"
+      text={value}
+      href={isLink ? getExternalHref(value) : undefined}
+    />
   </Box>
 )
 
@@ -173,12 +212,18 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
           | string
           | null
           | undefined
+        const formattedValue = formatValue(rawValue, field.formatter)
+        const displayValue =
+          field.key === 'technicalSheetUrl'
+            ? formattedValue ?? 'Nessuna'
+            : formattedValue
 
         return (
           <FieldRow
             key={field.key}
             label={field.label}
-            value={formatValue(rawValue, field.formatter)}
+            value={displayValue}
+            isLink={field.key === 'technicalSheetUrl'}
           />
         )
       })}

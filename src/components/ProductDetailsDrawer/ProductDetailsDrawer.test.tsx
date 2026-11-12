@@ -10,6 +10,7 @@ vi.mock('../../config/initiativeResolver', () => ({
       { key: 'countryOfProduction', label: 'Paese di produzione', formatter: 'country' },
       { key: 'capacity', label: 'Capacità' },
       { key: 'productCode', label: 'Codice prodotto' },
+      { key: 'technicalSheetUrl', label: 'Scheda tecnica' },
     ],
     copy: {},
   }),
@@ -62,7 +63,8 @@ describe('ProductDetailsDrawer', () => {
     productName: 'Prodotto Test',
     productGroup: 'group1',
     capacity: '10kg',
-    productCode: 'CODE123'
+    productCode: 'CODE123',
+    technicalSheetUrl: 'https://www.example.com/scheda'
   };
 
   beforeEach(() => {
@@ -106,6 +108,62 @@ describe('ProductDetailsDrawer', () => {
     await user.hover(screen.getAllByText(longValue)[0])
 
     expect(await screen.findByRole('tooltip')).toHaveTextContent(longValue)
+  });
+
+  it('renders the technical sheet as an external link with a tooltip', async () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(false);
+    const user = userEvent.setup();
+
+    render(
+      <ProductDetailsDrawer
+        open
+        onClose={vi.fn()}
+        product={{ ...mockProduct, technicalSheetUrl: 'www.example.com/scheda' }}
+      />
+    );
+
+    const link = screen.getByRole('link', { name: 'www.example.com/scheda' });
+    expect(link).toHaveAttribute('href', 'https://www.example.com/scheda');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveStyle({ color: 'rgb(11, 62, 227)' });
+    await user.hover(link);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('www.example.com/scheda');
+  });
+
+  it('keeps the tooltip but does not link when the technical sheet is Nessuna', async () => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(false);
+    const user = userEvent.setup();
+
+    render(
+      <ProductDetailsDrawer
+        open
+        onClose={vi.fn()}
+        product={{ ...mockProduct, technicalSheetUrl: 'Nessuna' }}
+      />
+    );
+
+    const text = screen.getByText('Nessuna');
+    expect(text.closest('a')).toBeNull();
+    await user.hover(text);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('Nessuna');
+  });
+
+  it.each(['', undefined])('shows Nessuna for an empty or missing technical sheet (%s)', async (value) => {
+    (useIsMobile as unknown as ReturnType<typeof vi.fn>).mockReturnValue(false);
+    const user = userEvent.setup();
+
+    render(
+      <ProductDetailsDrawer
+        open
+        onClose={vi.fn()}
+        product={{ ...mockProduct, technicalSheetUrl: value }}
+      />
+    );
+
+    const text = screen.getByText('Nessuna');
+    expect(text.closest('a')).toBeNull();
+    await user.hover(text);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('Nessuna');
   });
 
   it('calls onClose when close button clicked', () => {
