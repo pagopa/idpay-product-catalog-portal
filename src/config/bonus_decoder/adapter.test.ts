@@ -16,13 +16,13 @@ describe('bonus decoder adapter', () => {
     const product = adapter({
       ...rawProduct,
       scart,
-      connectivity: 'LAN e WIFI',
+      connectivity: 'LAN e WI-FI',
       technicalSheetUrl: 'https://www.google.com',
     })
 
     expect(product).toMatchObject({
       scart: expected,
-      connectivity: 'LAN e WIFI',
+      connectivity: 'LAN e WI-FI',
       technicalSheetUrl: 'https://www.google.com',
     })
   })
