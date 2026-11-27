@@ -498,6 +498,8 @@ const ProductsFilters: React.FC<ProductsFiltersProps> = ({
                 open={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
                 PaperProps={{
+                    role: 'dialog',
+                    'aria-modal': true,
                     sx: {
                         borderTopLeftRadius: '20px',
                         borderTopRightRadius: '20px',

@@ -236,7 +236,7 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
         anchor="right"
         open={open}
         onClose={onClose}
-        slotProps={{ paper: { sx: { width, maxWidth: '100vw', overflowX: 'hidden', wordBreak: 'break-word' } } }}
+        PaperProps={{ sx: { width, maxWidth: '100vw', overflowX: 'hidden', wordBreak: 'break-word' } }}
       >
         {Header}
         {Content}
@@ -252,16 +252,14 @@ export const ProductDetailsDrawer: React.FC<Props> = ({
       onOpen={onOpen ?? (() => { })}
       disableBackdropTransition={!iOS}
       disableDiscovery={iOS}
-      slotProps={{
-        paper: {
-          sx: {
-            height: mobileHeight,
-            width: '100%',
-            maxHeight: '100%',
-            borderTopLeftRadius: 12,
-            borderTopRightRadius: 12,
-            wordBreak: 'break-word',
-          },
+      PaperProps={{
+        sx: {
+          height: mobileHeight,
+          width: '100%',
+          maxHeight: '100%',
+          borderTopLeftRadius: 12,
+          borderTopRightRadius: 12,
+          wordBreak: 'break-word',
         },
       }}
     >
