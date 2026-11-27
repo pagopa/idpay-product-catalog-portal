@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn install --immutable --check-cache || yarn install --force 
+          yarn install --frozen-lockfile
 
       - name: Test and coverage
         run: yarn test:coverage
