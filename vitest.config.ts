@@ -8,6 +8,11 @@ export default defineConfig({
   },
   test: {
     pool: 'threads',
+    server: {
+      deps: {
+        inline: ['@pagopa/mui-italia'],
+      },
+    },
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.ts',
